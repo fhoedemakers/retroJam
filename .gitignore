@@ -1,6 +1,7 @@
 *Zone.Identifier
 fh.log
 CMakePresets.json
+_codeql_detected_source_root
 # Prerequisites
 *.d
 
