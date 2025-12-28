@@ -128,6 +128,13 @@ int main()
     {
         if (strlen(selectedRom) == 0)
         {
+            if ( !Frens::isPsramEnabled() ) {
+                snprintf(ErrorMessage, 256, "Error: PSRAM not detected!");
+                isFatalError = true;
+            } else {
+                ErrorMessage[0] = 0;
+                isFatalError = false;
+            }
             // Show menu with supported file extensions
             // .nes = NES ROMs
             // .md = Sega Genesis/MegaDrive ROMs
