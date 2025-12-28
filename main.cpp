@@ -117,7 +117,7 @@ int main()
     
     // Initialize settings with a generic emulator type
     // When specific emulators are added, this should be changed appropriately
-    FrensSettings::initSettings(FrensSettings::emulators::NES);
+    FrensSettings::initSettings(FrensSettings::emulators::MULTI);
     
     // Initialize display and SD card
     // Note: Audio buffer size can be adjusted based on emulator requirements
