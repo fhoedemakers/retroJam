@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cstring>
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/divider.h"
@@ -122,10 +123,6 @@ int main()
     // Note: Audio buffer size can be adjusted based on emulator requirements
     #define AUDIOBUFFERSIZE 1024
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
-    
-#if !HSTX
-    scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
-#endif
     
     bool showSplash = true;
     while (true)
