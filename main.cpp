@@ -20,6 +20,7 @@
 
 #define SWVERSION "V0.1"
 #define EMULATOR_CLOCKFREQ_KHZ 252000
+#define AUDIOBUFFERSIZE 1024
 
 bool isFatalError = false;
 char *romName;
@@ -121,7 +122,6 @@ int main()
     
     // Initialize display and SD card
     // Note: Audio buffer size can be adjusted based on emulator requirements
-    #define AUDIOBUFFERSIZE 1024
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
     
     bool showSplash = true;
