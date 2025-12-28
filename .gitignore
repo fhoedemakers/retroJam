@@ -1,0 +1,68 @@
+*Zone.Identifier
+fh.log
+CMakePresets.json
+_codeql_detected_source_root
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+**/build
+.vscode
+
+# Apple filesystem cruft
+.DS_Store
+venv
+
+# Visual Studio cache files
+.vs/
+
+# Build directories
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Node modules
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
