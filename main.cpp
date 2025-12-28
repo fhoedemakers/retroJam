@@ -18,7 +18,6 @@
 #include "vumeter.h"
 #include "menu_settings.h"
 
-#define SWVERSION "V0.1"
 #define EMULATOR_CLOCKFREQ_KHZ 252000
 #define AUDIOBUFFERSIZE 1024
 
@@ -88,7 +87,7 @@ void splash()
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
 
     strcpy(s, "(Emulators not yet implemented)");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CYELLOW, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
 
     strcpy(s, "https://github.com/");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolor);
