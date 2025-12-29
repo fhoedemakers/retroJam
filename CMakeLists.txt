@@ -79,6 +79,7 @@ add_executable(${projectname}
     sms_overlay555.c
     sms_main.cpp
     sms_state.cpp
+    md_main.cpp
 )
 
 pico_set_program_name(${projectname} "${projectname}")
@@ -204,6 +205,7 @@ target_link_libraries(${projectname} PRIVATE
     infones
     peanut_gb
     smscore
+    gwenesis
 )
 
 if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
@@ -218,6 +220,7 @@ target_include_directories(${projectname}
         pico_shared
         tusb_xinput
         smsplus
+        gwenesis
         .
 )
 
@@ -228,5 +231,6 @@ add_subdirectory(tusb_xinput xinput_host)
 add_subdirectory(infones)
 add_subdirectory(peanut_gb)
 add_subdirectory(smsplus)
+add_subdirectory(gwenesis)
 target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
 pico_add_extra_outputs(${projectname})

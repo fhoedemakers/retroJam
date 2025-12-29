@@ -21,8 +21,9 @@
 int nes_main(); // Forward declaration of nes_main  function
 int gb_main();  // Forward declaration of gb_main  function
 int sms_main(); // Forward declaration of sms_main function
+int md_main();  // Forward declaration of md_main  function
 #define EMULATOR_CLOCKFREQ_KHZ 252000
-#define AUDIOBUFFERSIZE 1024
+#define AUDIOBUFFERSIZE (1024 * 4)   // * 4 for Genesis
 
 bool isFatalError = false;
 char *romName;
@@ -147,7 +148,7 @@ int main()
         // .gg = Game Gear ROMs
         // .gb = GameBoy ROMs
         // .gbc = GameBoy Color ROMs
-        menu("Picomulator", ErrorMessage, isFatalError, showSplash, ".nes .md .sms .gg .gb .gbc", selectedRom);
+        menu("Picomulator", ErrorMessage, isFatalError, showSplash, ".nes .md .gen .bin .sms .gg .gb .gbc", selectedRom);
         printf("Selected ROM from menu: %s\n", selectedRom);
 
         // TODO: Detect ROM type and launch appropriate emulator
@@ -157,10 +158,10 @@ int main()
             printf("Launching NES emulator...\n");
             // Launch NES emulator
             nes_main(); 
-        } else if ( Frens::cstr_endswith(selectedRom, ".md") ) {
+        } else if ( Frens::cstr_endswith(selectedRom, ".md") || Frens::cstr_endswith(selectedRom, ".gen") || Frens::cstr_endswith(selectedRom, ".bin") ) {
             printf("Launching Genesis/MegaDrive emulator...\n");
             // Launch Genesis/MegaDrive emulator
-            // To be implemented
+            md_main();
         } else if ( Frens::cstr_endswith(selectedRom, ".gb") || Frens::cstr_endswith(selectedRom, ".gbc") ) {
             printf("Launching GameBoy/GameBoy Color emulator...\n");
             // Launch GameBoy/GameBoy Color emulator
