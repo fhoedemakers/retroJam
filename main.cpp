@@ -101,12 +101,24 @@ void splash()
 
 int main()
 {
+    vreg_voltage voltage = VREG_VOLTAGE_1_20;
+    bool freqOverruled = false;
     char selectedRom[FF_MAX_LFN];
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
-
-    Frens::setClocksAndStartStdio(CPUFreqKHz, VREG_VOLTAGE_1_20);
-
+    Frens::FlashParams *flashParams;
+    auto flashparamInFlash = ((uintptr_t)&__flash_binary_end + 0xFFF) & ~0xFFF;
+    // assign flashParams to point to flash location
+    flashParams = (Frens::FlashParams *)flashparamInFlash;
+  
+    if (strncmp(flashParams->magic, "FRENS001", 8) == 0)
+    {
+        CPUFreqKHz = flashParams->cpuFreqKHz;
+        voltage = flashParams->voltage;
+        freqOverruled = true;
+    }
+    Frens::setClocksAndStartStdio(CPUFreqKHz, voltage);
+      printf("Checking flash params at 0x%08X\n", (uintptr_t)flashparamInFlash);
     printf("==========================================================================================\n");
     printf("Picomulator %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
@@ -118,7 +130,10 @@ int main()
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
-    
+    if (freqOverruled)
+    {
+        printf("CPU Frequency overruled by flash param to %d kHz\n", CPUFreqKHz);
+    }
     // Initialize settings with a generic emulator type
     // When specific emulators are added, this should be changed appropriately
     FrensSettings::initSettings(FrensSettings::emulators::MULTI);
@@ -154,19 +169,20 @@ int main()
         // TODO: Detect ROM type and launch appropriate emulator
         // For now, just display a message and return to menu
         printf("ROM selected: %s\n", selectedRom);
-        if ( Frens::cstr_endswith(selectedRom, ".nes") ) {
+        printf("Launching  %s emulator\n", FrensSettings::getEmulatorTypeString());
+        if ( FrensSettings::getEmulatorType() == FrensSettings::emulators::NES ) {
             printf("Launching NES emulator...\n");
             // Launch NES emulator
             nes_main(); 
-        } else if ( Frens::cstr_endswith(selectedRom, ".md") || Frens::cstr_endswith(selectedRom, ".gen") || Frens::cstr_endswith(selectedRom, ".bin") ) {
+        } else if ( FrensSettings::getEmulatorType() == FrensSettings::emulators::GENESIS ) {
             printf("Launching Genesis/MegaDrive emulator...\n");
             // Launch Genesis/MegaDrive emulator
             md_main();
-        } else if ( Frens::cstr_endswith(selectedRom, ".gb") || Frens::cstr_endswith(selectedRom, ".gbc") ) {
+        } else if ( FrensSettings::getEmulatorType() == FrensSettings::emulators::GAMEBOY ) {
             printf("Launching GameBoy/GameBoy Color emulator...\n");
             // Launch GameBoy/GameBoy Color emulator
             gb_main(); 
-        } else if ( Frens::cstr_endswith(selectedRom, ".sms")  || Frens::cstr_endswith(selectedRom, ".gg") ) {
+        } else if ( FrensSettings::getEmulatorType() == FrensSettings::emulators::SMS ) {
             printf("Launching Sega Master System/Game Gear emulator...\n");
             // Launch Sega Master System/Game Gear emulator
             sms_main();
