@@ -70,6 +70,15 @@ add_executable(${projectname}
     main.cpp
     DefaultSS444.c
     DefaultSS555.c
+    nes_main.cpp
+    nes_state.cpp
+    gb_main.cpp
+    gb_overlay444.c
+    gb_overlay555.c
+    sms_overlay444.c
+    sms_overlay555.c
+    sms_main.cpp
+    sms_state.cpp
 )
 
 pico_set_program_name(${projectname} "${projectname}")
@@ -129,6 +138,10 @@ target_compile_definitions(${projectname} PRIVATE
     GPIOHSTXINVERTED=${GPIOHSTXINVERTED}
     ENABLE_VU_METER=${ENABLE_VU_METER}
     WIIPAD_DELAYED_START=${WIIPAD_DELAYED_START}
+    ENABLE_SOUND=1                  # peanut_gb sound support
+    PEANUT_FULL_GBC_SUPPORT=1       # peanut_gb full GBC support
+    LSB_FIRST=1                     # SMS emulator LSB first input
+    MB_SMS=1                        # SMS emulator Megabios support (Needed?)
 )
 
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
@@ -188,6 +201,9 @@ target_link_libraries(${projectname} PRIVATE
     tinyusb_host 
     pico_shared  
     xinput_host   
+    infones
+    peanut_gb
+    smscore
 )
 
 if(PICO_BOARD STREQUAL "pico_w" OR PICO_BOARD STREQUAL "pico2_w")
@@ -196,9 +212,12 @@ endif()
 
 target_include_directories(${projectname}
     PRIVATE
+        infones
+        peanut_gb
         pico_lib
         pico_shared
         tusb_xinput
+        smsplus
         .
 )
 
@@ -206,5 +225,8 @@ add_subdirectory(pico_lib/dvi)
 add_subdirectory(pico_lib/util)
 add_subdirectory(pico_shared)
 add_subdirectory(tusb_xinput xinput_host)
+add_subdirectory(infones)
+add_subdirectory(peanut_gb)
+add_subdirectory(smsplus)
 target_link_options(${projectname} PRIVATE -Xlinker --print-memory-usage --data-sections)
 pico_add_extra_outputs(${projectname})

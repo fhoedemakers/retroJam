@@ -18,13 +18,16 @@
 #include "vumeter.h"
 #include "menu_settings.h"
 
+int nes_main(); // Forward declaration of nes_main  function
+int gb_main();  // Forward declaration of gb_main  function
+int sms_main(); // Forward declaration of sms_main function
 #define EMULATOR_CLOCKFREQ_KHZ 252000
 #define AUDIOBUFFERSIZE 1024
 
 bool isFatalError = false;
 char *romName;
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
-
+#if 0
 // Visibility configuration for options menu
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_settings.h
@@ -54,7 +57,7 @@ const uint8_t g_available_screen_modes[] = {
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
 };
-
+#endif
 // Placeholder splash screen for the menu system
 void splash()
 {
@@ -122,40 +125,59 @@ int main()
     // Initialize display and SD card
     // Note: Audio buffer size can be adjusted based on emulator requirements
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
-    
+  
     bool showSplash = true;
+    if (!Frens::isPsramEnabled())
+    {
+        snprintf(ErrorMessage, 256, "Error: PSRAM not detected!");
+        isFatalError = true;
+    }
+    else
+    {
+        ErrorMessage[0] = 0;
+        isFatalError = false;
+    }
     while (true)
     {
-        if (strlen(selectedRom) == 0)
-        {
-            if ( !Frens::isPsramEnabled() ) {
-                snprintf(ErrorMessage, 256, "Error: PSRAM not detected!");
-                isFatalError = true;
-            } else {
-                ErrorMessage[0] = 0;
-                isFatalError = false;
-            }
-            // Show menu with supported file extensions
-            // .nes = NES ROMs
-            // .md = Sega Genesis/MegaDrive ROMs
-            // .gg = Game Gear ROMs
-            // .gb = GameBoy ROMs
-            // .gbc = GameBoy Color ROMs
-            menu("Picomulator", ErrorMessage, isFatalError, showSplash, ".nes .md .gg .gb .gbc", selectedRom);
-            printf("Selected ROM from menu: %s\n", selectedRom);
-        }
-        
+
+    
+        // Show menu with supported file extensions
+        // .nes = NES ROMs
+        // .md = Sega Genesis/MegaDrive ROMs
+        // .gg = Game Gear ROMs
+        // .gb = GameBoy ROMs
+        // .gbc = GameBoy Color ROMs
+        menu("Picomulator", ErrorMessage, isFatalError, showSplash, ".nes .md .sms .gg .gb .gbc", selectedRom);
+        printf("Selected ROM from menu: %s\n", selectedRom);
+
         // TODO: Detect ROM type and launch appropriate emulator
         // For now, just display a message and return to menu
         printf("ROM selected: %s\n", selectedRom);
-        printf("Emulator not yet implemented.\n");
+        if ( Frens::cstr_endswith(selectedRom, ".nes") ) {
+            printf("Launching NES emulator...\n");
+            // Launch NES emulator
+            nes_main(); 
+        } else if ( Frens::cstr_endswith(selectedRom, ".md") ) {
+            printf("Launching Genesis/MegaDrive emulator...\n");
+            // Launch Genesis/MegaDrive emulator
+            // To be implemented
+        } else if ( Frens::cstr_endswith(selectedRom, ".gb") || Frens::cstr_endswith(selectedRom, ".gbc") ) {
+            printf("Launching GameBoy/GameBoy Color emulator...\n");
+            // Launch GameBoy/GameBoy Color emulator
+            gb_main(); 
+        } else if ( Frens::cstr_endswith(selectedRom, ".sms")  || Frens::cstr_endswith(selectedRom, ".gg") ) {
+            printf("Launching Sega Master System/Game Gear emulator...\n");
+            // Launch Sega Master System/Game Gear emulator
+            sms_main();
+        }
+        
+        else {
+            printf("Unsupported ROM format selected.\n");
+        }
         
         // Clear the selection to return to menu
         selectedRom[0] = 0;
         showSplash = false;
-        
-        // Brief delay before showing menu again
-        sleep_ms(2000);
     }
 
     return 0;
