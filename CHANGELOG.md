@@ -3,6 +3,7 @@
 # v0.1 Release notes
 
 Initial release. Adafruit Fruit Jam only.
+There will be bugs! Please report them on GitHub.
 
 ## Metadata
 
