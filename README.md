@@ -1,6 +1,6 @@
 # retroJam
 
-Multicore emulator for Adafruit Fruit Jam. Other boards may follow. 
+This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow.
 
 ## Supported Systems
 
@@ -47,6 +47,8 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
    ```
 
 4. Flash the resulting `.uf2` file from the `releases` folder to your RP2350 board.
+
+5. Play!
 
 ## Hardware
 
