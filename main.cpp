@@ -68,10 +68,10 @@ void splash()
     int bgcolor = DEFAULT_BGCOLOR;
     ClearScreen(bgcolor);
 
-    strcpy(s, "Picomulator");
+    strcpy(s, "retroJam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 2, s, fgcolor, bgcolor);
 
-    strcpy(s, "Multicore Emulator");
+    strcpy(s, "Multi retro game Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
     
     strcpy(s, "for RP2350 with PSRAM");
@@ -85,14 +85,14 @@ void splash()
     strcpy(s, "Supported systems:");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
     
-    strcpy(s, "NES, Genesis/MD, Game Gear");
+    strcpy(s, "NES, Genesis/MD, SMS/Game Gear");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CGREEN, bgcolor);
     
     strcpy(s, "GameBoy, GameBoy Color");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
 
-    strcpy(s, "(Emulators not yet implemented)");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
+    // strcpy(s, "(Emulators not yet implemented)");
+    // putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
 
     strcpy(s, "https://github.com/");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolor);
