@@ -4,6 +4,7 @@ Multicore emulator for Adafruit Fruit Jam. Other boards may follow.
 
 ## Supported Systems
 
+Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
 - `.nes` - Nintendo Entertainment System
 - `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive
