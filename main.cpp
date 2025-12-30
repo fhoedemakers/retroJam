@@ -77,7 +77,7 @@ void splash()
     strcpy(s, "Adafruit Fruit Jam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 4, s, fgcolor, bgcolor);
 
-    strcpy(s, "A project from");
+    strcpy(s, "A project created by");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 8, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, CLIGHTBLUE, bgcolor);
