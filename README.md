@@ -12,7 +12,7 @@ This emulator framework supports the following file extensions:
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
 
-**Note:** Genesis does not run at full speed because of SRAM constraints. As an alternative, you can use the standalone. [Pico-GenesisPlus](https://github.com/fhoedemakers/pico-genesisPlus)
+**Note:** Genesis does not run at full speed because of SRAM constraints. As an alternative, you can use the standalone [Pico-GenesisPlus](https://github.com/fhoedemakers/pico-genesisPlus) emulator.
 
 ## Building
 
