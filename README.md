@@ -54,7 +54,7 @@ This project is designed for:
 - **Board:** Adafruit Fruit Jam
 - **Controllers:** USB Dual SHock, Dual Sense, XInput (XBOX), NES controller, and Wii Classic Controller support
 
-Other boards will follow. PSRAM must be available for it to work.
+Other boards may follow. PSRAM must be available for it to work.
 
 ## Structure
 
