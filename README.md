@@ -1,17 +1,18 @@
-# picomulator
+# retroJam
 
-Multicore emulator for RP2350 with PSRAM support.
+Multicore emulator for Adafruit Fruit Jam. Other boards may follow. 
 
 ## Supported Systems
 
 This emulator framework supports the following file extensions:
 - `.nes` - Nintendo Entertainment System
-- `.md` - Sega Genesis/MegaDrive
+- `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive
 - `.gg` - Sega Game Gear
+- `.sms` - Sega Master System
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
 
-**Note:** Individual emulator cores are not yet implemented. This is the framework structure based on pico-infonesPlus.
+**Note:** Genesis does not run at full speed because of SRAM constraints. As an alternative, you can use the standalone. [Pico-GenesisPlus](https://github.com/fhoedemakers/pico-genesisPlus)
 
 ## Building
 
@@ -40,11 +41,11 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
 ## Hardware
 
 This project is designed for:
-- **Board:** Raspberry Pi Pico 2 (RP2350)
-- **Memory:** PSRAM support enabled
-- **Display:** DVI output (configurable via BoardConfigs.cmake)
-- **Storage:** SD card for ROM files
-- **Controllers:** USB, NES controller, and Wii Classic Controller support
+
+- **Board:** Adafruit Fruit Jam
+- **Controllers:** USB Dual SHock, Dual Sense, XInput (XBOX), NES controller, and Wii Classic Controller support
+
+Other boards will follow. PSRAM must be available for it to work.
 
 ## Structure
 
