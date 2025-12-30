@@ -96,7 +96,7 @@ void splash()
 
     strcpy(s, "https://github.com/");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 25, s, CLIGHTBLUE, bgcolor);
-    strcpy(s, "fhoedemakers/picomulator");
+    strcpy(s, "fhoedemakers/retroJam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 26, s, CLIGHTBLUE, bgcolor);
 }
 
@@ -162,7 +162,7 @@ int main()
         // .gg = Game Gear ROMs
         // .gb = GameBoy ROMs
         // .gbc = GameBoy Color ROMs
-        menu("Picomulator", ErrorMessage, isFatalError, showSplash, ".nes .md .gen .bin .sms .gg .gb .gbc", selectedRom);
+        menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .md .gen .bin .sms .gg .gb .gbc", selectedRom);
         printf("Selected ROM from menu: %s\n", selectedRom);
 
         // TODO: Detect ROM type and launch appropriate emulator
