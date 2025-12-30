@@ -763,7 +763,7 @@ int gb_main()
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
-    FrensSettings::initSettings(FrensSettings::emulators::GAMEBOY);
+    FrensSettings::initSettings(FrensSettings::emulators::MULTI);
 
 #if !HSTX
     if (settings.screenMode != ScreenMode::NOSCANLINE_1_1 && settings.screenMode != ScreenMode::SCANLINE_1_1)

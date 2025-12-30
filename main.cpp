@@ -107,18 +107,15 @@ int main()
     romName = selectedRom;
     ErrorMessage[0] = selectedRom[0] = 0;
     Frens::FlashParams *flashParams;
-    auto flashparamInFlash = ((uintptr_t)&__flash_binary_end + 0xFFF) & ~0xFFF;
     // assign flashParams to point to flash location
-    flashParams = (Frens::FlashParams *)flashparamInFlash;
-  
-    if (strncmp(flashParams->magic, "FRENS001", 8) == 0)
-    {
+    flashParams = (Frens::FlashParams *)FLASHPARAM_ADDRESS;
+    if ( Frens::validateFlashParams(*flashParams) ) {
         CPUFreqKHz = flashParams->cpuFreqKHz;
         voltage = flashParams->voltage;
         freqOverruled = true;
     }
     Frens::setClocksAndStartStdio(CPUFreqKHz, voltage);
-      printf("Checking flash params at 0x%08X\n", (uintptr_t)flashparamInFlash);
+    printf("Checking flash params at 0x%08X\n", (uintptr_t)flashParams);
     printf("==========================================================================================\n");
     printf("Picomulator %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
@@ -134,6 +131,7 @@ int main()
     {
         printf("CPU Frequency overruled by flash param to %d kHz\n", CPUFreqKHz);
     }
+
     // Initialize settings with a generic emulator type
     // When specific emulators are added, this should be changed appropriately
     FrensSettings::initSettings(FrensSettings::emulators::MULTI);

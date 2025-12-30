@@ -1028,7 +1028,7 @@ int nes_main()
 #else
     printf("Mapper 5 is disabled\n");
 #endif
-    FrensSettings::initSettings(FrensSettings::emulators::NES);
+    FrensSettings::initSettings(FrensSettings::emulators::MULTI);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif

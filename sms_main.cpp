@@ -1084,7 +1084,7 @@ int sms_main()
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
-    FrensSettings::initSettings(FrensSettings::emulators::SMS);
+    FrensSettings::initSettings(FrensSettings::emulators::MULTI);
    
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);

@@ -880,7 +880,7 @@ int md_main()
     printf("Stack size: %d bytes\n", PICO_STACK_SIZE);
     printf("==========================================================================================\n");
     printf("Starting up...\n");
-    FrensSettings::initSettings(FrensSettings::emulators::GENESIS);
+    FrensSettings::initSettings(FrensSettings::emulators::MULTI);
 #if !HSTX
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
