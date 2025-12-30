@@ -55,7 +55,7 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
 This project is designed for:
 
 - **Board:** Adafruit Fruit Jam
-- **Controllers:** USB Dual SHock, Dual Sense, XInput (XBOX), NES controller, and Wii Classic Controller support
+- **Controllers:** USB Dual Shock, Dual Sense, XInput (XBOX), NES USB controller, and Wii Classic Controller support via STEMMA QT.
 
 Other boards may follow. PSRAM must be available for it to work.
 
