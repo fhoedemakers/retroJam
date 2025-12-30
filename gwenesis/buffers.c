@@ -15,12 +15,13 @@ extern void frens_f_free(void *ptr);
 extern void * frens_f_realloc(void *ptr, size_t newSize);
 void init_emulator_mem() {
 #if 1
-    M68K_RAM = (unsigned char *)frens_f_malloc(MAX_RAM_SIZE);
-    ZRAM = (unsigned char *)frens_f_malloc(MAX_Z80_RAM_SIZE);
+    // not all buffers can be allocated in SRAM because of memory constraints
+    M68K_RAM = (unsigned char *)malloc(MAX_RAM_SIZE);
+    ZRAM = (unsigned char *)malloc(MAX_Z80_RAM_SIZE);
     VRAM = (unsigned char *)frens_f_malloc(VRAM_MAX_SIZE);
     // SCREEN = (uint8_t (*)[320])malloc(240 * 320 * sizeof(uint8_t));
     //SCREEN = NULL;
-    gwenesis_sn76489_buffer = (int16_t *)frens_f_malloc(GWENESIS_AUDIO_BUFFER_LENGTH_NTSC * 2 * sizeof(int16_t));
+    gwenesis_sn76489_buffer = (int16_t *)malloc(GWENESIS_AUDIO_BUFFER_LENGTH_NTSC * 2 * sizeof(int16_t));
 #else
     M68K_RAM = (unsigned char *)malloc(MAX_RAM_SIZE);
     ZRAM = (unsigned char *)malloc(MAX_Z80_RAM_SIZE);
@@ -39,11 +40,11 @@ void init_emulator_mem() {
 
 void free_emulator_mem() {
 #if 1
-    frens_f_free(M68K_RAM);
-    frens_f_free(ZRAM);
+    free(M68K_RAM);
+    free(ZRAM);
     frens_f_free(VRAM);
     //free(SCREEN);
-    frens_f_free(gwenesis_sn76489_buffer);
+    free(gwenesis_sn76489_buffer);
 #else
     free(M68K_RAM);
     free(ZRAM);
