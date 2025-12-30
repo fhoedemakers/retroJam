@@ -1,16 +1,16 @@
 # retroJam
 
-This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow.
+This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators has savestate support.
 It also can play .wav music files.
 
 ## Supported Systems
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
-- `.nes` - Nintendo Entertainment System
+- `.nes` - Nintendo Entertainment System. With save state support.
 - `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive
-- `.gg` - Sega Game Gear
-- `.sms` - Sega Master System
+- `.gg` - Sega Game Gear - With save state support.
+- `.sms` - Sega Master System - With save state support.
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
 
