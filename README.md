@@ -1,6 +1,7 @@
 # retroJam
 
 This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow.
+It also can play .wav music files.
 
 ## Supported Systems
 
@@ -125,6 +126,8 @@ The menu allows you to play music files. Files must meet the following requireme
 - **Sample rate:** 44.1 kHz  
 - **Channels:** Stereo  
 - **File extension:** `.wav`  
+
+You can find some free retro tunes here:  https://lonepeakmusic.itch.io/retro-midi-music-pack-1
 
 ## How to Play
 1. Select a music file from the menu.
