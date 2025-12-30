@@ -2,7 +2,7 @@
 # IMPORTANT: Use the latest version of tinyusb and pico pio USB.
 cmake_minimum_required(VERSION 3.13)
 
-set(projectname picomulator)
+set(projectname retroJam)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
