@@ -27,8 +27,8 @@
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-#if 0
-const int8_t g_settings_visibility[MOPT_COUNT] = {
+#if 1
+const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     -1,                              // No save state support
     !HSTX,                           // Screen Mode (only when not HSTX)
@@ -48,6 +48,8 @@ const int8_t g_settings_visibility[MOPT_COUNT] = {
     0                                // Rapid Fire on B
 
 };
+#endif
+#if 0
 const uint8_t g_available_screen_modes[] = {
         0,   // SCANLINE_8_7,
         0,  // NOSCANLINE_8_7,
@@ -751,7 +753,7 @@ static void __not_in_flash_func(process)()
 // MARK: main
 int gb_main()
 {
-
+    g_settings_visibility = g_settings_visibility_gb;
     printf("==========================================================================================\n");
     printf("Pico-PeanutGB %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);

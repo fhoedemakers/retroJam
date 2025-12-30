@@ -48,7 +48,7 @@ static int g_record_gain_q8 = RECORD_GAIN_Q8;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility[MOPT_COUNT] = {
+const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
@@ -68,13 +68,14 @@ const int8_t g_settings_visibility[MOPT_COUNT] = {
     1                                // Rapid Fire on B
 
 };
-
+#if 1
 const uint8_t g_available_screen_modes[] = {
     1, // SCANLINE_8_7,
     1, // NOSCANLINE_8_7,
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
     };
+#endif
 namespace
 {
     nes_ROMSelector romSelector_;
@@ -1011,7 +1012,7 @@ int InfoNES_Menu()
 int nes_main()
 {
 
-
+    g_settings_visibility = g_settings_visibility_nes;
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
