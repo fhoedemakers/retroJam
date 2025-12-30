@@ -43,8 +43,8 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
 
 3. Create build directory and compile, do this in the directory where you downloaded the retroJam repo:
    ```bash
-   chmod +x bld.sh
-   ./bld.sh -c8
+   chmod +x buildAll.sh
+   ./buildAll.sh
    ```
 
 4. Flash the resulting `.uf2` file from the `releases` folder to your RP2350 board.
