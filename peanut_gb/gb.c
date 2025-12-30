@@ -25,13 +25,13 @@ uint8_t *GBaddress; // pointer to the GB ROM file
 static bool useHSTX = false;
 
 // Palette definition
-static uint16_t __not_in_flash_func(dmgGreyscalePalette555)[3][4] = {
+static uint16_t (dmgGreyscalePalette555)[3][4] = {
     {0x7FFF, 0x56B5, 0x294A, 0x0000},
     {0x7FFF, 0x56B5, 0x294A, 0x0000},
     {0x7FFF, 0x56B5, 0x294A, 0x0000},
 };
 
-static uint16_t __not_in_flash_func(dmgColorPalette555)[3][4] = {
+static uint16_t (dmgColorPalette555)[3][4] = {
     {
         0xFFFF,
         0xED13,
@@ -52,9 +52,9 @@ static uint16_t __not_in_flash_func(dmgColorPalette555)[3][4] = {
     },
 };
 
-static uint16_t __not_in_flash_func(dmgGreyscalePalette444)[3][4];
+static uint16_t (dmgGreyscalePalette444)[3][4];
 
-static uint16_t __not_in_flash_func(dmgColorPalette444)[3][4];
+static uint16_t (dmgColorPalette444)[3][4];
 
 static uint16_t dmgGreenPalette444[3][4] = {
     /* DMG (original Game Boy) canonical green palette (light -> dark)
@@ -131,7 +131,7 @@ void stripextensionfromfilename(char *filename)
 
 // uint8_t *address = (uint8_t *)GB_FILE_ADDR;
 
-uint8_t __not_in_flash_func(gb_rom_read)(struct gb_s *gb, const uint_fast32_t addr)
+uint8_t (gb_rom_read)(struct gb_s *gb, const uint_fast32_t addr)
 {
     // const struct priv_t * const p = gb->direct.priv;
     // const struct priv_t *const p = static_cast<const struct priv_t *>(gb->direct.priv);
@@ -141,7 +141,7 @@ uint8_t __not_in_flash_func(gb_rom_read)(struct gb_s *gb, const uint_fast32_t ad
 /**
  * Returns a byte from the cartridge RAM at the given address.
  */
-uint8_t __not_in_flash_func(gb_cart_ram_read)(struct gb_s *gb, const uint_fast32_t addr)
+uint8_t (gb_cart_ram_read)(struct gb_s *gb, const uint_fast32_t addr)
 {
     // const struct priv_t * const p = gb->direct.priv;
     const struct priv_t *const p = (const struct priv_t *)(gb->direct.priv);
@@ -152,7 +152,7 @@ uint8_t __not_in_flash_func(gb_cart_ram_read)(struct gb_s *gb, const uint_fast32
  * Writes a given byte to the cartridge RAM at the given address.
  */
 
-void __not_in_flash_func(gb_cart_ram_write)(struct gb_s *gb, const uint_fast32_t addr,
+void (gb_cart_ram_write)(struct gb_s *gb, const uint_fast32_t addr,
                                             const uint8_t val)
 {
     // const struct priv_t * const p = gb->direct.priv;
@@ -337,7 +337,7 @@ int startemulation(uint8_t *rom, char *romname, const char *savedir, char *Error
     return 1;
 }
 
-void __not_in_flash_func(lcd_draw_line)(struct gb_s *gb,
+void (lcd_draw_line)(struct gb_s *gb,
                                         const uint8_t *pixels,
                                         const uint_fast8_t line)
 {

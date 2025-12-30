@@ -211,7 +211,7 @@ int ApuC5DmaLength, ApuC5CacheDmaLength;
 /*-------------------------------------------------------------------*/
 /*  Wave Data                                                        */
 /*-------------------------------------------------------------------*/
-BYTE __not_in_flash_func(pulse_25)[0x20] = {
+BYTE (pulse_25)[0x20] = {
     0x11,
     0x11,
     0x11,
@@ -246,7 +246,7 @@ BYTE __not_in_flash_func(pulse_25)[0x20] = {
     0x00,
 };
 
-BYTE __not_in_flash_func(pulse_50)[0x20] = {
+BYTE (pulse_50)[0x20] = {
     0x11,
     0x11,
     0x11,
@@ -281,7 +281,7 @@ BYTE __not_in_flash_func(pulse_50)[0x20] = {
     0x00,
 };
 
-BYTE __not_in_flash_func(pulse_75)[0x20] = {
+BYTE (pulse_75)[0x20] = {
     0x11,
     0x11,
     0x11,
@@ -316,7 +316,7 @@ BYTE __not_in_flash_func(pulse_75)[0x20] = {
     0x00,
 };
 
-BYTE __not_in_flash_func(pulse_87)[0x20] = {
+BYTE (pulse_87)[0x20] = {
     0x11,
     0x11,
     0x11,
@@ -351,7 +351,7 @@ BYTE __not_in_flash_func(pulse_87)[0x20] = {
     0x00,
 };
 
-BYTE __not_in_flash_func(triangle_50)[0x20] = {
+BYTE (triangle_50)[0x20] = {
     0x00,
     0x10,
     0x20,
@@ -386,7 +386,7 @@ BYTE __not_in_flash_func(triangle_50)[0x20] = {
     0x0f,
 };
 
-BYTE *__not_in_flash_func(pulse_waves)[4] = {
+BYTE *(pulse_waves)[4] = {
     pulse_87,
     pulse_75,
     pulse_50,
@@ -396,7 +396,7 @@ BYTE *__not_in_flash_func(pulse_waves)[4] = {
 /*-------------------------------------------------------------------*/
 /*  Active Time Left Data                                            */
 /*-------------------------------------------------------------------*/
-BYTE __not_in_flash_func(ApuAtl)[0x20] =
+BYTE (ApuAtl)[0x20] =
     {
         5,
         127,
@@ -435,14 +435,14 @@ BYTE __not_in_flash_func(ApuAtl)[0x20] =
 /*-------------------------------------------------------------------*/
 /* Frequency Limit of Rectangle Channels                             */
 /*-------------------------------------------------------------------*/
-WORD __not_in_flash_func(ApuFreqLimit)[8] =
+WORD (ApuFreqLimit)[8] =
     {
         0x3FF, 0x555, 0x666, 0x71C, 0x787, 0x7C1, 0x7E0, 0x7F0};
 
 /*-------------------------------------------------------------------*/
 /* Noise Frequency Lookup Table                                      */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuNoiseFreq)[16] =
+DWORD (ApuNoiseFreq)[16] =
     {
         4, 8, 16, 32, 64, 96, 128, 160,
         202, 254, 380, 508, 762, 1016, 2034, 4068};
@@ -450,7 +450,7 @@ DWORD __not_in_flash_func(ApuNoiseFreq)[16] =
 /*-------------------------------------------------------------------*/
 /* DMC Transfer Clocks Table                                          */
 /*-------------------------------------------------------------------*/
-DWORD __not_in_flash_func(ApuDpcmCycles)[16] =
+DWORD (ApuDpcmCycles)[16] =
     {
         428, 380, 340, 320, 286, 254, 226, 214,
         190, 160, 142, 128, 106, 85, 72, 54};
@@ -465,7 +465,7 @@ DWORD __not_in_flash_func(ApuDpcmCycles)[16] =
 /* Write registers of rectangular wave #1                            */
 /*-------------------------------------------------------------------*/
 
-int __not_in_flash_func(ApuWriteWave1)(int cycles, int event)
+int (ApuWriteWave1)(int cycles, int event)
 {
   /* APU Reg Write Event */
   while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
@@ -534,7 +534,7 @@ int __not_in_flash_func(ApuWriteWave1)(int cycles, int event)
 /* Rendering rectangular wave #1                                     */
 /*-------------------------------------------------------------------*/
 
-void __not_in_flash_func(ApuRenderingWave1)(int n)
+void (ApuRenderingWave1)(int n)
 {
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave1(ApuCyclesPerSample * (n + 1), 0);
@@ -567,7 +567,7 @@ void __not_in_flash_func(ApuRenderingWave1)(int n)
 /* Write registers of rectangular wave #2                           */
 /*-------------------------------------------------------------------*/
 
-int __not_in_flash_func(ApuWriteWave2)(int cycles, int event)
+int (ApuWriteWave2)(int cycles, int event)
 {
   /* APU Reg Write Event */
   while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
@@ -635,7 +635,7 @@ int __not_in_flash_func(ApuWriteWave2)(int cycles, int event)
 /* Rendering rectangular wave #2                                     */
 /*-------------------------------------------------------------------*/
 
-void __not_in_flash_func(ApuRenderingWave2)(int n)
+void (ApuRenderingWave2)(int n)
 {
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave2(ApuCyclesPerSample * (n + 1), 0);
@@ -668,7 +668,7 @@ void __not_in_flash_func(ApuRenderingWave2)(int n)
 /* Write registers of triangle wave #3                              */
 /*-------------------------------------------------------------------*/
 
-int __not_in_flash_func(ApuWriteWave3)(int cycles, int event)
+int (ApuWriteWave3)(int cycles, int event)
 {
   /* APU Reg Write Event */
   while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
@@ -730,7 +730,7 @@ int __not_in_flash_func(ApuWriteWave3)(int cycles, int event)
 /* Rendering triangle wave #3                                        */
 /*-------------------------------------------------------------------*/
 
-void __not_in_flash_func(ApuRenderingWave3)(int n)
+void (ApuRenderingWave3)(int n)
 {
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave3(ApuCyclesPerSample * (n + 1), 0);
@@ -761,7 +761,7 @@ void __not_in_flash_func(ApuRenderingWave3)(int n)
 /* Write registers of noise channel #4                              */
 /*-------------------------------------------------------------------*/
 
-int __not_in_flash_func(ApuWriteWave4)(int cycles, int event)
+int (ApuWriteWave4)(int cycles, int event)
 {
   /* APU Reg Write Event */
   while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
@@ -836,7 +836,7 @@ int __not_in_flash_func(ApuWriteWave4)(int cycles, int event)
 /* Rendering noise channel #4                                        */
 /*-------------------------------------------------------------------*/
 
-void __not_in_flash_func(ApuRenderingWave4)(int n)
+void (ApuRenderingWave4)(int n)
 {
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave4(ApuCyclesPerSample * (n + 1), 0);
@@ -889,7 +889,7 @@ void __not_in_flash_func(ApuRenderingWave4)(int n)
 /* Write registers of DPCM channel #5                               */
 /*-------------------------------------------------------------------*/
 
-int __not_in_flash_func(ApuWriteWave5)(int cycles, int event)
+int (ApuWriteWave5)(int cycles, int event)
 {
   /* APU Reg Write Event */
   while ((event < cur_event) && (ApuEventQueue[event].time < cycles))
@@ -943,7 +943,7 @@ int __not_in_flash_func(ApuWriteWave5)(int cycles, int event)
 /* Rendering DPCM channel #5                                         */
 /*-------------------------------------------------------------------*/
 
-void __not_in_flash_func(ApuRenderingWave5)(int n)
+void (ApuRenderingWave5)(int n)
 {
   ApuCtrlNew = ApuCtrl;
   ApuWriteWave5(ApuCyclesPerSample * (n + 1), 0);
@@ -1159,7 +1159,7 @@ void InfoNES_pAPUVsync()
 
 uint32_t leftSamples16 = 0;
 
-void __not_in_flash_func(InfoNES_pAPUHsync)(bool enabled)
+void (InfoNES_pAPUHsync)(bool enabled)
 {
   auto n16 = ApuSamplesPerSync16 + leftSamples16;
   auto n = n16 >> 16;

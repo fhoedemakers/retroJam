@@ -741,7 +741,7 @@ struct gb_s
  * Internal function used to read bytes.
  * addr is host platform endian.
  */
-uint8_t __not_in_flash_func(__gb_read)(struct gb_s *gb, uint16_t addr)
+uint8_t (__gb_read)(struct gb_s *gb, uint16_t addr)
 {
 	switch(PEANUT_GB_GET_MSN16(addr))
 	{
@@ -850,7 +850,7 @@ uint8_t __not_in_flash_func(__gb_read)(struct gb_s *gb, uint16_t addr)
 /**
  * Internal function used to write bytes.
  */
-void __not_in_flash_func(__gb_write)(struct gb_s *gb, uint_fast16_t addr, uint8_t val)
+void (__gb_write)(struct gb_s *gb, uint_fast16_t addr, uint8_t val)
 {
 	switch(PEANUT_GB_GET_MSN16(addr))
 	{
@@ -1190,7 +1190,7 @@ void __not_in_flash_func(__gb_write)(struct gb_s *gb, uint_fast16_t addr, uint8_
 	return;
 }
 
-uint8_t __not_in_flash_func(__gb_execute_cb)(struct gb_s *gb)
+uint8_t (__gb_execute_cb)(struct gb_s *gb)
 {
 	uint8_t inst_cycles;
 	uint8_t cbop = __gb_read(gb, gb->cpu_reg.pc.reg++);
@@ -1400,7 +1400,7 @@ static int compare_sprites(const void *in1, const void *in2)
 #endif
 
 extern uint16_t *currentpalette;
-void __not_in_flash_func(__gb_draw_line)(struct gb_s *gb)
+void (__gb_draw_line)(struct gb_s *gb)
 {
 	uint8_t pixels[160] = {0};
 	WORD * buff = dvi_getlinebuffer(gb->hram_io[IO_LY]);
@@ -1728,11 +1728,11 @@ void __not_in_flash_func(__gb_draw_line)(struct gb_s *gb)
 /**
  * Internal function used to step the CPU.
  */
-void __not_in_flash_func(__gb_step_cpu)(struct gb_s *gb)
+void (__gb_step_cpu)(struct gb_s *gb)
 {
 	uint8_t opcode;
 	uint_fast16_t inst_cycles;
-	static const uint8_t __not_in_flash_func(op_cycles)[0x100] =
+	static const uint8_t (op_cycles)[0x100] =
 	{
 		/* *INDENT-OFF* */
 		/*0 1 2  3  4  5  6  7  8  9  A  B  C  D  E  F	*/
@@ -1754,7 +1754,7 @@ void __not_in_flash_func(__gb_step_cpu)(struct gb_s *gb)
 		12,12,8, 4, 0,16, 8,16,12, 8,16, 4, 0, 0, 8,16	/* 0xF0 */
 		/* *INDENT-ON* */
 	};
-	static const uint_fast16_t __not_in_flash_func(TAC_CYCLES)[4] = {1024, 16, 64, 256};
+	static const uint_fast16_t (TAC_CYCLES)[4] = {1024, 16, 64, 256};
 
 	/* Handle interrupts */
 	/* If gb_halt is positive, then an interrupt must have occurred by the
@@ -3467,7 +3467,7 @@ void __not_in_flash_func(__gb_step_cpu)(struct gb_s *gb)
 	/* If halted, loop until an interrupt occurs. */
 }
 
-void __not_in_flash_func(gb_run_frame)(struct gb_s *gb)
+void (gb_run_frame)(struct gb_s *gb)
 {
 	gb->gb_frame = false;
 

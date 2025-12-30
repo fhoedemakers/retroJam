@@ -29,7 +29,7 @@ extern "C" {
 #define strcasecmp stricmp
 #endif
 #endif
-
+#define in_ram
 #ifndef in_ram
 #ifdef PICO_BOARD
 #include <pico.h>

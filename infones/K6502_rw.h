@@ -46,7 +46,7 @@ static inline BYTE K6502_ReadZp(BYTE byAddr)
 /*               K6502_Read() : Reading operation                    */
 /*                                                                   */
 /*===================================================================*/
-static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
+static inline BYTE (K6502_Read)(WORD wAddr)
 {
   /*
  *  Reading operation
@@ -201,7 +201,7 @@ static inline BYTE __not_in_flash_func(K6502_Read)(WORD wAddr)
 /*               K6502_Write() : Writing operation                    */
 /*                                                                   */
 /*===================================================================*/
-static inline void __not_in_flash_func(K6502_Write)(WORD wAddr, BYTE byData)
+static inline void (K6502_Write)(WORD wAddr, BYTE byData)
 {
   /*
  *  Writing operation

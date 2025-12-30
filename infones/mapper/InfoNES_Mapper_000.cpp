@@ -77,7 +77,7 @@ void Map0_Init()
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 Write Function                                          */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_Write)(WORD wAddr, BYTE byData)
+void (Map0_Write)(WORD wAddr, BYTE byData)
 {
   /*
  *  Dummy Write to Mapper
@@ -88,7 +88,7 @@ void __not_in_flash_func(Map0_Write)(WORD wAddr, BYTE byData)
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 Write to SRAM Function                                  */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_Sram)(WORD wAddr, BYTE byData)
+void (Map0_Sram)(WORD wAddr, BYTE byData)
 {
   /*
  *  Dummy Write to Sram
@@ -99,7 +99,7 @@ void __not_in_flash_func(Map0_Sram)(WORD wAddr, BYTE byData)
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 Write to APU Function                                   */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_Apu)(WORD wAddr, BYTE byData)
+void (Map0_Apu)(WORD wAddr, BYTE byData)
 {
   /*
  *  Dummy Write to Apu
@@ -110,7 +110,7 @@ void __not_in_flash_func(Map0_Apu)(WORD wAddr, BYTE byData)
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 Read from APU Function                                  */
 /*-------------------------------------------------------------------*/
-BYTE __not_in_flash_func(Map0_ReadApu)(WORD wAddr)
+BYTE (Map0_ReadApu)(WORD wAddr)
 {
   /*
  *  Dummy Read from Apu
@@ -122,7 +122,7 @@ BYTE __not_in_flash_func(Map0_ReadApu)(WORD wAddr)
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 V-Sync Function                                         */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_VSync)()
+void (Map0_VSync)()
 {
   /*
  *  Dummy Callback at VSync
@@ -133,7 +133,7 @@ void __not_in_flash_func(Map0_VSync)()
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 H-Sync Function                                         */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_HSync)()
+void (Map0_HSync)()
 {
 /*
  *  Dummy Callback at HSync
@@ -154,7 +154,7 @@ void __not_in_flash_func(Map0_HSync)()
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 PPU Function                                            */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_PPU)(WORD wAddr)
+void (Map0_PPU)(WORD wAddr)
 {
   /*
  *  Dummy Callback at PPU
@@ -165,7 +165,7 @@ void __not_in_flash_func(Map0_PPU)(WORD wAddr)
 /*-------------------------------------------------------------------*/
 /*  Mapper 0 Rendering Screen Function                               */
 /*-------------------------------------------------------------------*/
-void __not_in_flash_func(Map0_RenderScreen)(BYTE byMode)
+void (Map0_RenderScreen)(BYTE byMode)
 {
   /*
  *  Dummy Callback at Rendering Screen
