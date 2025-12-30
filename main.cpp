@@ -74,10 +74,10 @@ void splash()
     strcpy(s, "Multi retro game Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
     
-    strcpy(s, "for RP2350 with PSRAM");
+    strcpy(s, "Adafruit Fruit Jam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 4, s, fgcolor, bgcolor);
 
-    strcpy(s, "Menu System & SD Card Support");
+    strcpy(s, "A project from");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 8, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, CLIGHTBLUE, bgcolor);
