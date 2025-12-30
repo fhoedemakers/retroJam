@@ -46,7 +46,7 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
    ./pico_shared/bld.sh -c8
    ```
 
-4. Flash the resulting `.uf2` file to your RP2350 board.
+4. Flash the resulting `.uf2` file from the `releases` folder to your RP2350 board.
 
 ## Hardware
 
