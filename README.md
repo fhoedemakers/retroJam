@@ -30,10 +30,7 @@ This project requires the Raspberry Pi Pico SDK. Follow these steps:
 
 3. Create build directory and compile:
    ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make
+   ./pico_shared/bld.sh -c8
    ```
 
 4. Flash the resulting `.uf2` file to your RP2350 board.
