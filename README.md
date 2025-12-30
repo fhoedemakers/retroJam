@@ -58,14 +58,7 @@ This project is designed for:
 - **Controllers:** USB Dual Shock, Dual Sense, XInput (XBOX), NES USB controller, and Wii Classic Controller support via STEMMA QT.
 
 Other boards may follow. PSRAM must be available for it to work.
-
-## Structure
-
-- `main.cpp` - Main entry point with menu system
-- `CMakeLists.txt` - Build configuration
-- `pico_lib/` - DVI and utility libraries (submodule)
-- `pico_shared/` - Shared code for menu, settings, and hardware support (submodule)
-- `tusb_xinput/` - USB controller support (submodule)
+ - USB controller support (submodule)
 
 ## Credits
 
