@@ -904,12 +904,12 @@ int md_main()
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     memset(palette, 0, sizeof(palette));
     printf("Starting game\n");
-    init_emulator_mem();
+    init_emulator_mem(HSTX);  // Use built-in malloc if HSTX is enabled
     load_cartridge(ROM_FILE_ADDR); // ROM_FILE_ADDR); // 0x100de000); // 0x100d1000);  // 0x100e2000); // ROM_FILE_ADDR);
     power_on();
     reset_emulation();
     emulate();
-    free_emulator_mem();
+    free_emulator_mem(HSTX);
 
     return 0;
 }
