@@ -143,6 +143,8 @@ target_compile_definitions(${projectname} PRIVATE
     PEANUT_FULL_GBC_SUPPORT=1       # peanut_gb full GBC support
     LSB_FIRST=1                     # SMS emulator LSB first input
     MB_SMS=1                        # SMS emulator Megabios support (Needed?)
+    RETROJAM=1                       # retroJam specific code adjustments
+
 )
 
 if(NOT PICO_PLATFORM STREQUAL "rp2040")
