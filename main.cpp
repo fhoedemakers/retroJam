@@ -144,7 +144,7 @@ int main()
     bool showSplash = true;
     if (!Frens::isPsramEnabled())
     {
-        snprintf(ErrorMessage, 256, "Error: PSRAM not detected!");
+        snprintf(ErrorMessage, 256, "PSRAM is not detected!");
         isFatalError = true;
     }
     else
