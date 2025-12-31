@@ -1,6 +1,6 @@
 # retroJam
 
-This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators has savestate support.
+This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
 It also can play .wav music files.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
@@ -16,45 +16,6 @@ This emulator framework supports the following file extensions:
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
 
-**Note:** Genesis does not run at full speed because of SRAM constraints. As an alternative, you can use the standalone [Pico-GenesisPlus](https://github.com/fhoedemakers/pico-genesisPlus) emulator.
-
-## Building
-
-If you want to build the project yourself, follow these steps:
-
-This project requires the Raspberry Pi Pico SDK and PIO USB. Follow these steps:
-
-1. Set up the Pico SDK environment:
-   ```bash
-   export PICO_SDK_PATH=/path/to/pico-sdk
-   ```
-   
-2. Download and extract the latest PICO-PIO-USB repo in a folder of your choice: https://github.com/sekigon-gonnoc/Pico-PIO-USB/releases 0.7.2 is the latest as of this writing.
-   ```bash
-   wget https://github.com/sekigon-gonnoc/Pico-PIO-USB/archive/refs/tags/0.7.2.zip
-   unzip 0.7.2.zip
-   ```
-   
-4. Set PICO_PIO_USB_PATH environment variabele:
-   ```bash
-   export PICO_PIO_USB_PATH=`pwd`/Pico-PIO-USB-0.7.2
-   ```
-2. Get the repo and initialize submodules in a folder of your choice:
-   ```bash
-   git clone https://github.com/fhoedemakers/retroJam.git
-   cd retroJam
-   git submodule update --init --recursive
-   ```
-
-3. Create build directory and compile, do this in the directory where you downloaded the retroJam repo:
-   ```bash
-   chmod +x buildAll.sh
-   ./buildAll.sh
-   ```
-
-4. Flash the resulting `.uf2` file from the `releases` folder to your RP2350 board.
-
-5. Play!
 
 ## Gamepad and keyboard usage
 
@@ -126,7 +87,7 @@ For this to work, extract the metadata packs from the releases section to your S
 The menu allows you to play music files. Files must meet the following requirements:
 
 - **Format:** WAV  
-- **Bit depth:** 16-bit  
+- **Bit depth:** 16-bit or 24-bit (will be downsampled to 16-bit) 
 - **Sample rate:** 44.1 kHz  
 - **Channels:** Stereo  
 - **File extension:** `.wav`  
@@ -150,6 +111,43 @@ You can easily convert MP3 files to WAV using [Audacity](https://www.audacitytea
    - **Encoding:** Signed 16-bit PCM
 4. Copy the exported WAV file to the SD card.
 
+## Building
+
+If you want to build the project yourself, follow these steps:
+
+This project requires the Raspberry Pi Pico SDK and PIO USB. Follow these steps:
+
+1. Set up the Pico SDK environment:
+   ```bash
+   export PICO_SDK_PATH=/path/to/pico-sdk
+   ```
+   
+2. Download and extract the latest PICO-PIO-USB repo in a folder of your choice: https://github.com/sekigon-gonnoc/Pico-PIO-USB/releases 0.7.2 is the latest as of this writing.
+   ```bash
+   wget https://github.com/sekigon-gonnoc/Pico-PIO-USB/archive/refs/tags/0.7.2.zip
+   unzip 0.7.2.zip
+   ```
+   
+4. Set PICO_PIO_USB_PATH environment variabele:
+   ```bash
+   export PICO_PIO_USB_PATH=`pwd`/Pico-PIO-USB-0.7.2
+   ```
+2. Get the repo and initialize submodules in a folder of your choice:
+   ```bash
+   git clone https://github.com/fhoedemakers/retroJam.git
+   cd retroJam
+   git submodule update --init --recursive
+   ```
+
+3. Create build directory and compile, do this in the directory where you downloaded the retroJam repo:
+   ```bash
+   chmod +x buildAll.sh
+   ./buildAll.sh
+   ```
+
+4. Flash the resulting `.uf2` file from the `releases` folder to your RP2350 board.
+
+5. Copy your roms to the sd-card and play!
 ## Hardware
 
 This project is designed for:
