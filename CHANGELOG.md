@@ -1,5 +1,13 @@
 # CHANGELOG
 
+A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav music files.
+
+# v0.2 Release notes
+
+## Fixes
+
+- WAV playback fixed.
+
 # v0.1 Release notes
 
 Initial release. Adafruit Fruit Jam only for now.
