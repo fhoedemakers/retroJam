@@ -1,20 +1,25 @@
 # retroJam
 
-This project is a multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
+This project is a multi retro console emulator for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
 It also can play .wav music files.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
-## Supported Systems
+## Video
+Click on image below to see a demo video.
+
+[![Video](https://img.youtube.com/vi/whPayCYHspI/0.jpg)](https://www.youtube.com/watch?v=whPayCYHspI)
+
+## Supported Emulators
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
 - `.nes` - Nintendo Entertainment System. With save state support.
-- `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive
 - `.gg` - Sega Game Gear - With save state support.
 - `.sms` - Sega Master System - With save state support.
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
+- `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive. Note: Sound quality is average.
 
 
 ## Gamepad and keyboard usage
@@ -29,7 +34,7 @@ This emulator framework supports the following file extensions:
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
-- Button2: Open folder/flash and start game.
+- Button2: Open folder/start game.
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
 - SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below. The settings menu can also be opened in-game.
@@ -82,7 +87,7 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 When a game is selected in the menu, pressing the START button will show metadata information about the game, such as title, publisher, year of release, genre, and box art (if available).
 For this to work, extract the metadata packs from the releases section to your SD card. 
 
-## Music Playback in menu (RP2350 Only)
+## Music playback in menu (RP2350 Only)
 
 The menu allows you to play music files. Files must meet the following requirements:
 
@@ -94,7 +99,7 @@ The menu allows you to play music files. Files must meet the following requireme
 
 You can find some free retro tunes here:  https://lonepeakmusic.itch.io/retro-midi-music-pack-1
 
-## How to Play
+## Starting playback
 1. Select a music file from the menu.
 2. Press **Button2** or **START** to start playback.
 3. Press **Button2** or **START** again to stop playback.

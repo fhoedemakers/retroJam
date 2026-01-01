@@ -2,6 +2,14 @@
 
 A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav music files.
 
+# v0.3 Release notes
+
+## Fixes
+
+- Clock speed on Fruit Jam was set to an incorrect value for Genesis games, causing instability. Fixed.
+- Fixed an issue where writing to flash sometimes caused the system to hang without rebooting.
+- Other small fixes and improvements.
+
 # v0.2 Release notes
 
 ## Fixes
