@@ -82,7 +82,7 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 When a game is selected in the menu, pressing the START button will show metadata information about the game, such as title, publisher, year of release, genre, and box art (if available).
 For this to work, extract the metadata packs from the releases section to your SD card. 
 
-## Music Playback in menu (RP2350 Only)
+## Music playback in menu (RP2350 Only)
 
 The menu allows you to play music files. Files must meet the following requirements:
 
@@ -94,7 +94,7 @@ The menu allows you to play music files. Files must meet the following requireme
 
 You can find some free retro tunes here:  https://lonepeakmusic.itch.io/retro-midi-music-pack-1
 
-## How to Play
+## Starting playback
 1. Select a music file from the menu.
 2. Press **Button2** or **START** to start playback.
 3. Press **Button2** or **START** again to stop playback.
