@@ -5,6 +5,11 @@ It also can play .wav music files.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
+## Video
+Click on image below to see a demo video.
+
+[![Video](https://img.youtube.com/vi/whPayCYHspI/0.jpg)](https://www.youtube.com/watch?v=whPayCYHspI)
+
 ## Supported Emulators
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
