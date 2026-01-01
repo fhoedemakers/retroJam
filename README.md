@@ -5,7 +5,7 @@ It also can play .wav music files.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
-## Supported Systems
+## Supported Emulators
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
