@@ -29,7 +29,7 @@ This emulator framework supports the following file extensions:
 Gamepad buttons:
 - UP/DOWN: Next/previous item in the menu.
 - LEFT/RIGHT: next/previous page.
-- Button2: Open folder/flash and start game.
+- Button2: Open folder/start game.
 - Button1: Back to parent folder.
 - START: Show [metadata](#using-metadata) and box art (when available)
 - SELECT: Opens a setting menu. Here you can change settings like screen mode, scanlines, framerate display, menu colors and other board specific settings. Settings can also be changed in-game by pressing some button combinations as explained below. The settings menu can also be opened in-game.
