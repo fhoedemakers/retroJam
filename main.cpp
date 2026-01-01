@@ -142,15 +142,18 @@ int main()
     isFatalError = !Frens::initAll(selectedRom, CPUFreqKHz, 4, 4, AUDIOBUFFERSIZE, false, true);
   
     bool showSplash = true;
-    if (!Frens::isPsramEnabled())
+    if (!isFatalError)
     {
-        snprintf(ErrorMessage, 256, "PSRAM is not detected!");
-        isFatalError = true;
-    }
-    else
-    {
-        ErrorMessage[0] = 0;
-        isFatalError = false;
+        if (!Frens::isPsramEnabled())
+        {
+            snprintf(ErrorMessage, 256, "PSRAM is not detected!");
+            isFatalError = true;
+        }
+        else
+        {
+            ErrorMessage[0] = 0;
+            isFatalError = false;
+        }
     }
     while (true)
     {
