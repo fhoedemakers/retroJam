@@ -46,7 +46,7 @@ extern const unsigned char sms_overlay_555[];
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-#if 1
+
 const int8_t g_settings_visibility_sms[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Save / Restore State
@@ -66,9 +66,8 @@ const int8_t g_settings_visibility_sms[MOPT_COUNT] = {
     0,                               // Rapid Fire on A
     0,                               // Rapid Fire on B
 };
-#endif
-#if 0
-const uint8_t g_available_screen_modes[] = {
+
+const uint8_t g_available_screen_modes_sms[] = {
 #if PICO_RP2350
     0, // SCANLINE_8_7, Does not work well with borders
 #else
@@ -82,7 +81,7 @@ const uint8_t g_available_screen_modes[] = {
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
 };
-#endif
+
 #define fpsfgcolor 0;     // black
 #define fpsbgcolor 0xFFF; // white
 
@@ -1076,6 +1075,7 @@ int sms_main()
 {
 
     g_settings_visibility = g_settings_visibility_sms;
+    g_available_screen_modes = g_available_screen_modes_sms;
     int fileSize = 0;
     isGameGear = false;
 

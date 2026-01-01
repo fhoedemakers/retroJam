@@ -87,7 +87,7 @@ static uint16_t wiipad_raw_cached = 0;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-#if 1
+
 const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     -1,                              // No save states/restore states for Genesis
@@ -108,15 +108,14 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0                                // Rapid Fire on B (not applicable)
 
 };
-#endif
-#if 0
-const uint8_t g_available_screen_modes[] = {
+
+const uint8_t g_available_screen_modes_md[] = {
     0, // SCANLINE_8_7,
     0, // NOSCANLINE_8_7
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
 };
-#endif
+
 #if 0
 int sampleIndex = 0;
 void __not_in_flash_func(processaudio)(int line)
@@ -871,6 +870,7 @@ static void __not_in_flash_func(emulate)()
 int md_main()
 {
     g_settings_visibility = g_settings_visibility_md;
+    g_available_screen_modes = g_available_screen_modes_md;
     printf("==========================================================================================\n");
     printf("Pico-Genesis+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);

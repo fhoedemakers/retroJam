@@ -68,14 +68,14 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1                                // Rapid Fire on B
 
 };
-#if 1
-const uint8_t g_available_screen_modes[] = {
+
+const uint8_t g_available_screen_modes_nes[] = {
     1, // SCANLINE_8_7,
     1, // NOSCANLINE_8_7,
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
     };
-#endif
+
 namespace
 {
     nes_ROMSelector romSelector_;
@@ -1013,6 +1013,7 @@ int nes_main()
 {
 
     g_settings_visibility = g_settings_visibility_nes;
+    g_available_screen_modes = g_available_screen_modes_nes;
     printf("==========================================================================================\n");
     printf("Pico-InfoNES+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
