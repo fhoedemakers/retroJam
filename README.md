@@ -15,11 +15,11 @@ Click on image below to see a demo video.
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
 - `.nes` - Nintendo Entertainment System. With save state support.
-- `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive
 - `.gg` - Sega Game Gear - With save state support.
 - `.sms` - Sega Master System - With save state support.
 - `.gb` - Nintendo GameBoy
 - `.gbc` - Nintendo GameBoy Color
+- `.md`,`.bin`, `.gen`  - Sega Genesis/MegaDrive. Note: Sound quality is average.
 
 
 ## Gamepad and keyboard usage
