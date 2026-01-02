@@ -119,6 +119,9 @@ void system_shutdown(void)
     frens_f_free(cacheStoreUsed);
     frens_f_free(cacheStore);
     frens_f_free(cachePtr);
+    frens_f_free(sms.sram);
+    frens_f_free(sms.ram);
+
     if (snd.enabled)
     {
         //        OPLL_delete(opll);

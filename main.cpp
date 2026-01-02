@@ -28,7 +28,7 @@ int md_main();  // Forward declaration of md_main  function
 bool isFatalError = false;
 char *romName;
 static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
-#if 1
+
 // Visibility configuration for options menu
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_settings.h
@@ -51,15 +51,14 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     0,                               // Rapid Fire on A
     0                                // Rapid Fire on B
 };
-#endif
-#if 0
-const uint8_t g_available_screen_modes[] = {
-    1, // SCANLINE_8_7,
-    1, // NOSCANLINE_8_7,
-    1, // SCANLINE_1_1,
+
+const uint8_t g_available_screen_modes_main[] = {
+    0, // SCANLINE_8_7,
+    0, // NOSCANLINE_8_7,
+    0, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
 };
-#endif
+
 // Placeholder splash screen for the menu system
 void splash()
 {
@@ -159,6 +158,7 @@ int main()
     {
 
         g_settings_visibility = g_settings_visibility_main;
+        g_available_screen_modes = g_available_screen_modes_main;
         // Show menu with supported file extensions
         // .nes = NES ROMs
         // .md = Sega Genesis/MegaDrive ROMs

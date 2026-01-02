@@ -87,7 +87,7 @@ static uint16_t wiipad_raw_cached = 0;
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-#if 1
+
 const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     -1,                              // No save states/restore states for Genesis
@@ -108,15 +108,14 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0                                // Rapid Fire on B (not applicable)
 
 };
-#endif
-#if 0
-const uint8_t g_available_screen_modes[] = {
+
+const uint8_t g_available_screen_modes_md[] = {
     0, // SCANLINE_8_7,
     0, // NOSCANLINE_8_7
     1, // SCANLINE_1_1,
     1  // NOSCANLINE_1_1
 };
-#endif
+
 #if 0
 int sampleIndex = 0;
 void __not_in_flash_func(processaudio)(int line)
@@ -812,7 +811,8 @@ static void __not_in_flash_func(emulate)()
         ProcessAfterFrameIsRendered();
 
         frame++;
-
+#if 0
+        // Original FPS limiter code.
         if (limit_fps)
         {
             // Improved FPS limiter: fixed timestep, no drift
@@ -825,6 +825,39 @@ static void __not_in_flash_func(emulate)()
             }
             next_frame_time += frame_period;
         }
+#else
+        // this should be more accurate, especially in DVI mode
+        if (limit_fps)
+        {
+            const uint64_t frame_period = is_pal ? 20000 : 16667; // 50Hz or 60Hz
+            const uint64_t now = time_us_64();
+
+            // Initialize first deadline
+            if (next_frame_time == 0)
+                next_frame_time = now + frame_period;
+
+            // Wait if ahead of schedule
+            if (now < next_frame_time)
+            {
+                uint64_t remaining = next_frame_time - now;
+                if (remaining > 150)
+                    sleep_us(remaining - 150);
+                while (time_us_64() < next_frame_time)
+                {
+                    tight_loop_contents();
+                }
+                // Advance by exactly one frame period
+                next_frame_time += frame_period;
+            }
+            else
+            {
+                // Late: advance until the deadline is in the future (catch up without drifting)
+                do {
+                    next_frame_time += frame_period;
+                } while (now >= next_frame_time);
+            }
+        }
+#endif
         if (settings.flags.audioEnabled)
         {
             //  gwenesis_SN76489_run(REG1_PAL ? LINES_PER_FRAME_PAL : LINES_PER_FRAME_NTSC * VDP_CYCLES_PER_LINE);
@@ -871,6 +904,7 @@ static void __not_in_flash_func(emulate)()
 int md_main()
 {
     g_settings_visibility = g_settings_visibility_md;
+    g_available_screen_modes = g_available_screen_modes_md;
     printf("==========================================================================================\n");
     printf("Pico-Genesis+ %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
