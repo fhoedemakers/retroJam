@@ -114,13 +114,13 @@ void system_shutdown(void)
 {
     // free memory
     printf("Freeing memory allocated to emulator.\n");
-    frens_f_free(sms.sram);
-    frens_f_free(sms.ram);
     frens_f_free(snd.buffer[1]);
     frens_f_free(snd.buffer[0]);
     frens_f_free(cacheStoreUsed);
     frens_f_free(cacheStore);
     frens_f_free(cachePtr);
+    frens_f_free(sms.sram);
+    frens_f_free(sms.ram);
 
     if (snd.enabled)
     {
