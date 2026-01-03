@@ -161,15 +161,13 @@ int main()
         g_available_screen_modes = g_available_screen_modes_main;
         // Show menu with supported file extensions
         // .nes = NES ROMs
-        // .md = Sega Genesis/MegaDrive ROMs
+        // .md .bin .gen = Sega Genesis/MegaDrive ROMs
+        // .sms = Master System ROMs
         // .gg = Game Gear ROMs
         // .gb = GameBoy ROMs
         // .gbc = GameBoy Color ROMs
         menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .md .gen .bin .sms .gg .gb .gbc", selectedRom);
         printf("Selected ROM from menu: %s\n", selectedRom);
-
-        // TODO: Detect ROM type and launch appropriate emulator
-        // For now, just display a message and return to menu
         printf("ROM selected: %s\n", selectedRom);
         printf("Launching  %s emulator\n", FrensSettings::getEmulatorTypeString());
         if ( FrensSettings::getEmulatorType() == FrensSettings::emulators::NES ) {
