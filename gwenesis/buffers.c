@@ -33,13 +33,13 @@ void init_emulator_mem(bool useSRAM)
         printf("Using SRAM for emulator buffers");
         M68K_RAM = (unsigned char *)malloc(MAX_RAM_SIZE);
         ZRAM = (unsigned char *)malloc(MAX_Z80_RAM_SIZE);
-// #if RETROJAM
-//         printf(", but VRAM will be allocated in PSRAM.\n");
-//         VRAM = (unsigned char *)frens_f_malloc(VRAM_MAX_SIZE); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
-// #else
+#if RETROJAM
+        printf(", but VRAM will be allocated in PSRAM.\n");
+        VRAM = (unsigned char *)frens_f_malloc(VRAM_MAX_SIZE); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
+#else
         printf(".\n");
         VRAM = (unsigned char *)malloc(VRAM_MAX_SIZE);
-//#endif
+#endif
         // SCREEN = (uint8_t (*)[320])malloc(240 * 320 * sizeof(uint8_t));
         // SCREEN = NULL;
         gwenesis_sn76489_buffer = (int16_t *)malloc(GWENESIS_AUDIO_BUFFER_LENGTH_NTSC * 2 * sizeof(int16_t));
@@ -67,11 +67,11 @@ void free_emulator_mem(bool useSRAM)
     {
         free(M68K_RAM);
         free(ZRAM);
-// #if RETROJAM
-//         frens_f_free(VRAM); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
-// #else
+#if RETROJAM
+        frens_f_free(VRAM); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
+#else
         free(VRAM);
-// #endif
+#endif
         // free(SCREEN);
         free(gwenesis_sn76489_buffer);
     }

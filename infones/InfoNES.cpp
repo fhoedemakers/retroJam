@@ -213,7 +213,7 @@ WORD WorkFrameIdx;
 #else
 // WORD WorkFrame[ NES_DISP_WIDTH * NES_DISP_HEIGHT ];
 WORD *WorkLine = nullptr;
-void (InfoNES_SetLineBuffer)(WORD *p, WORD size)
+void __not_in_flash_func(InfoNES_SetLineBuffer)(WORD *p, WORD size)
 {
   assert(size >= NES_DISP_WIDTH);
   WorkLine = p;
@@ -315,13 +315,19 @@ void InfoNES_Init()
    *  Remarks
    *    Initialize memory, K6502 and Scanline Table.
    */
-
+#if 0
   RAM = (BYTE *)Frens::f_malloc(RAM_SIZE);
   SRAM = (BYTE *)Frens::f_malloc(SRAM_SIZE);
   PPURAM = (BYTE *)Frens::f_malloc(PPURAM_SIZE);
   SPRRAM = (BYTE *)Frens::f_malloc(SPRRAM_SIZE);
   ChrBuf = (BYTE *)Frens::f_malloc(CHRBUF_SIZE);
-
+#else
+  RAM = (BYTE *)malloc(RAM_SIZE);
+  SRAM = (BYTE *)malloc(SRAM_SIZE);
+  PPURAM = (BYTE *)malloc(PPURAM_SIZE);
+  SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
+  ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
+#endif
   int nIdx;
 
   // Initialize 6502
@@ -369,12 +375,20 @@ void InfoNES_Fin()
     MapperExit();
     MapperExit = nullptr;
   }
+#if 0
   Frens::f_free(RAM);
   Frens::f_free(SRAM);
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
+#else
+  free(RAM);
+  free(SRAM);
+  free(PPURAM);
+  free(SPRRAM);
+  free(ChrBuf);
 }
+#endif
 
 /*===================================================================*/
 /*                                                                   */
@@ -522,19 +536,8 @@ int InfoNES_Reset()
     InfoNES_Error("Mapper #%d is unsupported.", MapperNo);
     return -1;
   }
-  #if PICO_RP2350
-  if (MapperTable[nIdx].nMapperNo == 85 && !Frens::isPsramEnabled()) {
-    InfoNES_Error("Mapper #85 requires PSRAM, which is not detected.");
-    return -1;
-  }
-  #else 
-  if (MapperTable[nIdx].nMapperNo == 85) {
-    InfoNES_Error("Mapper #85 is unsupported.");
-    return -1;
-  }
-  #endif
+
   // Set up a mapper initialization function
-  MapperExit = nullptr;
   MapperTable[nIdx].pMapperInit();
 
   /*-------------------------------------------------------------------*/
@@ -677,7 +680,7 @@ void InfoNES_Main()
 /*              InfoNES_Cycle() : The loop of emulation              */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_Cycle)()
+void __not_in_flash_func(InfoNES_Cycle)()
 {
   /*
    *  The loop of emulation
@@ -748,7 +751,7 @@ void (InfoNES_Cycle)()
 /*              InfoNES_HSync() : A function in H-Sync               */
 /*                                                                   */
 /*===================================================================*/
-int (InfoNES_HSync)()
+int __not_in_flash_func(InfoNES_HSync)()
 {
   /*
    *  A function in H-Sync
@@ -904,7 +907,7 @@ int (InfoNES_HSync)()
 
 namespace
 {
-  void (compositeSprite)(const uint16_t *pal,
+  void __not_in_flash_func(compositeSprite)(const uint16_t *pal,
                                             const uint8_t *spr,
                                             uint16_t *buf)
   {
@@ -941,7 +944,7 @@ namespace
 /*              InfoNES_DrawLine() : Render a scanline               */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_DrawLine)()
+void __not_in_flash_func(InfoNES_DrawLine)()
 {
   /*
    *  Render a scanline
@@ -1520,7 +1523,7 @@ void (InfoNES_DrawLine)()
 /* InfoNES_GetSprHitY() : Get a position of scanline hits sprite #0  */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_GetSprHitY)()
+void __not_in_flash_func(InfoNES_GetSprHitY)()
 {
   /*
    * Get a position of scanline hits sprite #0
@@ -1647,7 +1650,7 @@ void (InfoNES_GetSprHitY)()
 /*            InfoNES_SetupChr() : Develop character data            */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_SetupChr)()
+void __not_in_flash_func(InfoNES_SetupChr)()
 {
   /*
    *  Develop character data
