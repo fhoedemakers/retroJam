@@ -1,6 +1,7 @@
 # retroJam
 
-This project is a multi retro console emulator for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
+This project is a multi retro console emulator primarely for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
+Other configurations are possible. See below.
 It also can play .wav music files.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
@@ -116,7 +117,63 @@ You can easily convert MP3 files to WAV using [Audacity](https://www.audacitytea
    - **Encoding:** Signed 16-bit PCM
 4. Copy the exported WAV file to the SD card.
 
-## Building
+## Other configurations
+
+### Murmulator M2
+
+To be discussed.
+
+### Adafruit Feather RP2350
+
+![IMG_9664](https://github.com/user-attachments/assets/dc63fae4-610b-43a0-89bc-e0a05618d71f)
+
+This config can be used for breadboard projects and requires the following hardware:
+  - Breadboard.
+  - [Adafruit Feather RP2350 with HSTX and PSRAM](https://www.adafruit.com/product/6130)
+  - [TLV320DAC3100 - I2S DAC with Headphone and Speaker Out](https://www.adafruit.com/product/6309)
+  - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
+  - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays](https://www.adafruit.com/product/6055)
+  - [22-pin 0.5mm pitch FPC Flex Cable for DSI CSI or HSTX - 5cm](https://www.adafruit.com/product/6034)
+  - For USB gamecontrollers:
+    - [Adafruit USB Type C Breakout Board - Downstream Connection](https://www.adafruit.com/product/4090)
+  - When using a WII-Classic controller for input:
+    - [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+- Added -D option to bld.sh to force DVI output on HSTX boards.
+
+How to Wire:
+
+Micro SD Breakout:
+
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| 3V  |  3.3V      | -    |
+| GND |  GND       | -    |
+| CLK |  6         | 6    |
+| CS  |  5         | 5    |
+| SO  |  4         | 4    |
+| SI  | MO         | 23   |
+
+USB- C Breakout:
+
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| VBUS| USB | - |
+| GND | GND | - |
+| D+  | 24  | 24 |
+| D-  | 25  | 25 |
+
+I2S DAC 
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| VIN | 3.3V | - |
+| GND | GND  | - |
+| SCL | SCL | 3|
+| SDA | SDA |2 |
+| WSEL|  10   | 10  |
+| BCK |  9   | 9 |
+| RST | SCK  | 22 | 
+
+## Building from source
 
 If you want to build the project yourself, follow these steps:
 
