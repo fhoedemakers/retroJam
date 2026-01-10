@@ -92,7 +92,7 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 When a game is selected in the menu, pressing the START button will show metadata information about the game, such as title, publisher, year of release, genre, and box art (if available).
 For this to work, extract the metadata packs from the releases section to your SD card. 
 
-## Music playback in menu (RP2350 Only)
+## Music playback in menu
 
 The menu allows you to play music files. Files must meet the following requirements:
 
