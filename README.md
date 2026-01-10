@@ -1,8 +1,12 @@
 # retroJam
 
-This project is a multi retro console emulator primarely for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
-Other configurations are possible. See below.
+This project is a multi retro console emulator primarely for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. 
+
+Some emulators have savestate support.
+
 It also can play .wav music files.
+
+Other configurations are possible. See below.
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
