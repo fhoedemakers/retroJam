@@ -157,7 +157,10 @@ Micro SD Breakout:
 | SO  |  4         | 4    |
 | SI  | MO         | 23   |
 
-USB- C Breakout:
+USB- C Breakout for connecting your game controller:
+
+> [!WARNING]  
+> Connect your USB game controller to this USB port. Do not connect power. Use the USB-port on the feather to connect power.
 
 | Breakout Pin | Feather Pin | GPIO |
 | ----|------------| ---- |
