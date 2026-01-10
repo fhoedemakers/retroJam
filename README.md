@@ -4,7 +4,7 @@ This project is a multi retro console emulator primarely for [Adafruit Fruit Jam
 
 Some emulators have savestate support.
 
-It also can play .wav music files.
+It also can [play .wav music files](#music-playback-in-menu).
 
 Other configurations are possible. [See below](#other-configurations).
 
