@@ -1,4 +1,4 @@
-# retroJam
+# retroJam, a multi retro game console emulator
 
 This project is a multi retro console emulator primarely for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. 
 
