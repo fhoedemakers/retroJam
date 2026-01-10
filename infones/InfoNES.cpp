@@ -316,11 +316,19 @@ void InfoNES_Init()
    *    Initialize memory, K6502 and Scanline Table.
    */
 
+ #if 0
   RAM = (BYTE *)Frens::f_malloc(RAM_SIZE);
   SRAM = (BYTE *)Frens::f_malloc(SRAM_SIZE);
   PPURAM = (BYTE *)Frens::f_malloc(PPURAM_SIZE);
   SPRRAM = (BYTE *)Frens::f_malloc(SPRRAM_SIZE);
   ChrBuf = (BYTE *)Frens::f_malloc(CHRBUF_SIZE);
+#else
+  RAM = (BYTE *)malloc(RAM_SIZE);
+  SRAM = (BYTE *)malloc(SRAM_SIZE);
+  PPURAM = (BYTE *)malloc(PPURAM_SIZE);
+  SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
+  ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
+#endif
 
   int nIdx;
 
@@ -369,11 +377,19 @@ void InfoNES_Fin()
     MapperExit();
     MapperExit = nullptr;
   }
+#if 0
   Frens::f_free(RAM);
   Frens::f_free(SRAM);
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
+#else
+  free(RAM);
+  free(SRAM);
+  free(PPURAM);
+  free(SPRRAM);
+  free(ChrBuf);
+#endif
 }
 
 /*===================================================================*/
