@@ -39,8 +39,8 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
     1,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
