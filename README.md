@@ -6,7 +6,7 @@ Some emulators have savestate support.
 
 It also can play .wav music files.
 
-Other configurations are possible. See below.
+Other configurations are possible. [See below](#other-configurations).
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
