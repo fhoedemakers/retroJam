@@ -127,7 +127,7 @@ You can easily convert MP3 files to WAV using [Audacity](https://www.audacitytea
 
 To be discussed.
 
-### Adafruit Feather RP2350
+### Adafruit Feather RP2350 with HSTX and PSRAM
 
 ![IMG_9664](https://github.com/user-attachments/assets/dc63fae4-610b-43a0-89bc-e0a05618d71f)
 
