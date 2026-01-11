@@ -129,7 +129,6 @@ To be discussed.
 
 ### Adafruit Feather RP2350 with HSTX and PSRAM
 
-![IMG_9664](https://github.com/user-attachments/assets/dc63fae4-610b-43a0-89bc-e0a05618d71f)
 
 This config can be used for breadboard projects and requires the following hardware:
   - Breadboard.
@@ -172,13 +171,14 @@ USB- C Breakout for connecting your game controller:
 I2S DAC 
 | Breakout Pin | Feather Pin | GPIO |
 | ----|------------| ---- |
-| VIN | 3.3V | - |
+| VIN | USB | - |
 | GND | GND  | - |
 | SCL | SCL | 3|
 | SDA | SDA |2 |
+| DIN | 11  | 11 |
 | WSEL|  10   | 10  |
 | BCK |  9   | 9 |
-| RST | SCK  | 22 | 
+| RST | A0  | 26 | 
 
 ## Building from source
 
