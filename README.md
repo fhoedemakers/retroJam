@@ -137,6 +137,9 @@ This config can be used for breadboard projects and requires the following hardw
   - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
   - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays](https://www.adafruit.com/product/6055)
   - [22-pin 0.5mm pitch FPC Flex Cable for DSI CSI or HSTX - 5cm](https://www.adafruit.com/product/6034)
+  - Speaker(s) like these:
+    - https://amzn.eu/d/9JMWfnK
+    - https://amzn.eu/d/0pf16Ne
   - For USB gamecontrollers:
     - [Adafruit USB Type C Breakout Board - Downstream Connection](https://www.adafruit.com/product/4090)
   - When using a WII-Classic controller for input:
