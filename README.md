@@ -180,6 +180,8 @@ I2S DAC
 | BCK |  9   | 9 |
 | RST | A0  | 26 | 
 
+![IMG_9671](https://github.com/user-attachments/assets/776145c9-5b22-4e44-b59b-11209ca80b3b)
+
 ## Building from source
 
 If you want to build the project yourself, follow these steps:
