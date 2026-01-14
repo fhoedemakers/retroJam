@@ -141,7 +141,7 @@ This config can be used for breadboard projects and requires the following hardw
     - [Adafruit USB Type C Breakout Board - Downstream Connection](https://www.adafruit.com/product/4090)
   - When using a WII-Classic controller for input:
     - [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
-- Added -D option to bld.sh to force DVI output on HSTX boards.
+
 
 How to Wire:
 
