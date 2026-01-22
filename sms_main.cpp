@@ -288,7 +288,7 @@ static void inline processaudioPerFrameI2S()
     {
         short l = snd.buffer[0][i];
         short r = snd.buffer[1][i];
-        EXT_AUDIO_ENQUEUE_SAMPLE(l >> 2, r >> 2);
+        EXT_AUDIO_ENQUEUE_SAMPLE(l >> 4, r >> 4);
 #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
