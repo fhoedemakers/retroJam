@@ -23,6 +23,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Use SRAM for NES emulator buffers.
 - SMS audio fixes.
 - GB Audio fixes.
+- Set volume to correct level when starting emulator.
 - More minor fixes and improvements.
 
 # v0.3 Release notes
