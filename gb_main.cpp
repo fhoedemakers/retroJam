@@ -779,6 +779,7 @@ int gb_main()
     reset = false;
     printf("Initializing Game Boy Emulator\n");
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     loadoverlay(); // load default overlay
     emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
     uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);

@@ -957,6 +957,7 @@ int md_main()
     audio_enabled = settings.flags.audioEnabled;
     next_frame_time = 0; // Reset next frame time for FPS limiter
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     memset(palette, 0, sizeof(palette));
     printf("Starting game\n");
     init_emulator_mem(HSTX);  // Use built-in malloc if HSTX is enabled

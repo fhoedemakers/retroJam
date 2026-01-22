@@ -1097,7 +1097,7 @@ int sms_main()
     fileSize = 0;
     isGameGear = false;
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     // Detect rom type from memory
     // This is used to determine the rom size and type (SMS or GG)
     detect_rom_type_from_memory(ROM_FILE_ADDR, &fileSize, &isGameGear);
