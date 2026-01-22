@@ -34,7 +34,11 @@ extern char *romName;
 static bool showSettings = false;
 static uint64_t start_tick_us = 0;
 static uint64_t fps = 0;
+#if 0 
 static char fpsString[9] = "000 000C";
+#else
+static char fpsString[4] = "000";
+#endif
 #define fpsfgcolor 0     // black
 #define fpsbgcolor 0xFFF // white
 
@@ -177,13 +181,14 @@ static int ProcessAfterFrameIsRendered()
 #else
         hstx_getframecounter();
 #endif
-    
+#if 0  
     if (settings.flags.displayFrameRate) {
         // measure temperature every 2 seconds
         if (hw_divider_s32_remainder_inlined(count, 120) == 0) {
             temperatureC = static_cast<int>(std::round(Frens::read_onboard_temperature('C')));
         }
     }
+#endif
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
 #if NES_PIN_CLK != -1
@@ -753,7 +758,7 @@ static void __not_in_flash_func(emulate)()
                     {
                         WORD *fpsBuffer = currentLineBuf + 5;
                         int rowInChar = scan_line % 8;
-                        for (auto i = 0; i < sizeof(fpsString) - 1; i++)
+                        for (auto i = 0; i < strlen(fpsString); i++)
                         {
                             char firstFpsDigit = fpsString[i];
                             char fontSlice = getcharslicefrom8x8font(firstFpsDigit, rowInChar);
@@ -899,12 +904,14 @@ static void __not_in_flash_func(emulate)()
             fpsString[0] = '0' + (fps / 100) % 10;
             fpsString[1] = '0' + (fps / 10) % 10;
             fpsString[2] = '0' + (fps % 10);
+#if 0
             fpsString[3] = ' ';
             fpsString[4] = (temperatureC / 100) % 10 + '0';
             fpsString[5] = (temperatureC / 10) % 10 + '0';
             fpsString[6] = (temperatureC % 10) + '0';
             fpsString[7] = 'C';
             fpsString[8] = 0;
+#endif
             frame_counter++;
         }
     }
