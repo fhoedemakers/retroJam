@@ -70,25 +70,25 @@ void splash()
     strcpy(s, "retroJam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 2, s, fgcolor, bgcolor);
 
-    strcpy(s, "Multi retro game Emulator");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
-    
-    strcpy(s, "Adafruit Fruit Jam");
+    strcpy(s, "a multi retro game Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 4, s, fgcolor, bgcolor);
+    
+    strcpy(s, "for the Adafruit Fruit Jam");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, fgcolor, bgcolor);
 
     strcpy(s, "A project created by");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 8, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
 
     strcpy(s, "Supported systems:");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, fgcolor, bgcolor);
     
     strcpy(s, "NES, Genesis/MD, SMS/Game Gear");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CGREEN, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
     
     strcpy(s, "GameBoy, GameBoy Color");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 16, s, CGREEN, bgcolor);
 
     // strcpy(s, "(Emulators not yet implemented)");
     // putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
