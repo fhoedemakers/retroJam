@@ -87,10 +87,10 @@ void splash()
     strcpy(s, "Nintendo Entertainment System");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 16, s, CGREEN, bgcolor);
     
-    strcpy(s, "Nintendo GameBoy");
+    strcpy(s, "Nintendo Game Boy");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CGREEN, bgcolor);
 
-    strcpy(s, "Nintendo GameBoy Color");
+    strcpy(s, "Nintendo Game Boy Color");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CGREEN, bgcolor);
 
     strcpy(s, "Sega Master System/Game Gear");
