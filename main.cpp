@@ -79,16 +79,26 @@ void splash()
     strcpy(s, "A project created by");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 10, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 11, s, CLIGHTBLUE, bgcolor);
 
     strcpy(s, "Supported systems:");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, fgcolor, bgcolor);
     
-    strcpy(s, "NES, Genesis/MD, SMS/Game Gear");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
-    
-    strcpy(s, "GameBoy, GameBoy Color");
+    strcpy(s, "Nintendo Entertainment System");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 16, s, CGREEN, bgcolor);
+    
+    strcpy(s, "Nintendo GameBoy");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CGREEN, bgcolor);
+
+    strcpy(s, "Nintendo GameBoy Color");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CGREEN, bgcolor);
+
+    strcpy(s, "Sega Master System/Game Gear");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 19, s, CGREEN, bgcolor);
+
+    strcpy(s, "Sega Genesis/Mega Drive");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 20, s, CGREEN, bgcolor);
+
 
     // strcpy(s, "(Emulators not yet implemented)");
     // putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
