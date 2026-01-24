@@ -18,6 +18,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
   - When using a WII-Classic controller for input:
     - [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
 - Added -D option to bld.sh to force DVI output on HSTX boards.
+- Added support for PCM5000A I2S DAC on HW_CONFIG 2 (Breadboard/PCB with Pico/Pico2)
 
 ## Fixes
 - Use SRAM for NES emulator buffers.
