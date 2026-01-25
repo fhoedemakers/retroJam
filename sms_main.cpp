@@ -59,8 +59,8 @@ const int8_t g_settings_visibility_sms[MOPT_COUNT] = {
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
     0,                               // DMG Palette (SMS/Game Gear emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for SMS/Game Gear)
     0,                               // Rapid Fire on A
@@ -288,7 +288,11 @@ static void inline processaudioPerFrameI2S()
     {
         short l = snd.buffer[0][i];
         short r = snd.buffer[1][i];
-        EXT_AUDIO_ENQUEUE_SAMPLE(l >> 2, r >> 2);
+#if HW_CONFIG == 8
+        EXT_AUDIO_ENQUEUE_SAMPLE(l >> 2, r >> 2);  
+#else
+        EXT_AUDIO_ENQUEUE_SAMPLE(l >> 4, r >> 4);
+#endif
 #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
@@ -1097,7 +1101,7 @@ int sms_main()
     fileSize = 0;
     isGameGear = false;
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     // Detect rom type from memory
     // This is used to determine the rom size and type (SMS or GG)
     detect_rom_type_from_memory(ROM_FILE_ADDR, &fileSize, &isGameGear);

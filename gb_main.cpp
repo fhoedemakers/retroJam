@@ -39,8 +39,8 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
     1,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
@@ -272,7 +272,11 @@ static void inline processaudioPerFrameI2S()
 
     // Gain control: either shift (fast) or Q15 multiplier (define AUDIO_OUTPUT_GAIN_Q15).
 #ifndef AUDIO_OUTPUT_GAIN_SHIFT
-#define AUDIO_OUTPUT_GAIN_SHIFT 2 // default attenuation ~ /4 to match DVI path (was 5 previously => too quiet)
+#if HW_CONFIG == 8
+#define AUDIO_OUTPUT_GAIN_SHIFT 2 // default attenuation ~ /16 to match DVI path 
+#else
+#define AUDIO_OUTPUT_GAIN_SHIFT 4 // default attenuation ~ /16 to match DVI path (was 2 previously => too quiet)
+#endif
 #endif
 
 #ifdef AUDIO_OUTPUT_GAIN_Q15
@@ -779,6 +783,7 @@ int gb_main()
     reset = false;
     printf("Initializing Game Boy Emulator\n");
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     loadoverlay(); // load default overlay
     emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
     uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);

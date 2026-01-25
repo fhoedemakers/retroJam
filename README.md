@@ -1,7 +1,12 @@
-# retroJam
+# retroJam, a multi retro game console emulator
 
-This project is a multi retro console emulator for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support.
-It also can play .wav music files.
+This project is a multi retro console emulator primarely for [Adafruit Fruit Jam](https://www.adafruit.com/product/6200), capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. 
+
+Some emulators have savestate support.
+
+It also can [play .wav music files](#music-playback-in-menu).
+
+Other configurations are possible. [See below](#other-configurations).
 
 See the [release](https://github.com/fhoedemakers/retroJam/releases/latest) section for precompiled binaries and metadata packs.
 
@@ -87,7 +92,7 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 When a game is selected in the menu, pressing the START button will show metadata information about the game, such as title, publisher, year of release, genre, and box art (if available).
 For this to work, extract the metadata packs from the releases section to your SD card. 
 
-## Music playback in menu (RP2350 Only)
+## Music playback in menu
 
 The menu allows you to play music files. Files must meet the following requirements:
 
@@ -116,7 +121,73 @@ You can easily convert MP3 files to WAV using [Audacity](https://www.audacitytea
    - **Encoding:** Signed 16-bit PCM
 4. Copy the exported WAV file to the SD card.
 
-## Building
+## Other configurations
+
+### Murmulator M2
+
+To be discussed.
+
+### Adafruit Feather RP2350 with HSTX and PSRAM
+
+
+This config can be used for breadboard projects and requires the following hardware:
+  - Breadboard.
+  - [Adafruit Feather RP2350 with HSTX and PSRAM](https://www.adafruit.com/product/6130)
+  - [TLV320DAC3100 - I2S DAC with Headphone and Speaker Out](https://www.adafruit.com/product/6309)
+  - [Adafruit Micro SD SPI or SDIO Card Breakout Board - 3V ONLY!](https://www.adafruit.com/product/4682)
+  - [Adafruit RP2350 22-pin FPC HSTX to DVI Adapter for HDMI Displays](https://www.adafruit.com/product/6055)
+  - [22-pin 0.5mm pitch FPC Flex Cable for DSI CSI or HSTX - 5cm](https://www.adafruit.com/product/6034)
+  - Speaker(s) like these:
+    - https://amzn.eu/d/9JMWfnK
+    - https://amzn.eu/d/0pf16Ne
+  - For USB gamecontrollers:
+    - [Adafruit USB Type C Breakout Board - Downstream Connection](https://www.adafruit.com/product/4090)
+  - When using a WII-Classic controller for input:
+    - [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
+
+> [!NOTE]
+> Breadboard setups can introduce signal interference at higher clock speeds, which may result  in video artifacts when running Genesis emulation. [#7](https://github.com/fhoedemakers/retroJam/issues/7)
+
+How to Wire:
+
+Micro SD Breakout:
+
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| 3V  |  3.3V      | -    |
+| GND |  GND       | -    |
+| CLK |  6         | 6    |
+| CS  |  5         | 5    |
+| SO  |  4         | 4    |
+| SI  | MO         | 23   |
+
+USB- C Breakout for connecting your game controller:
+
+> [!WARNING]  
+> Connect your USB game controller to this USB port. Do not connect power. Use the USB-port on the feather to connect power.
+
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| VBUS| USB | - |
+| GND | GND | - |
+| D+  | 24  | 24 |
+| D-  | 25  | 25 |
+
+I2S DAC 
+| Breakout Pin | Feather Pin | GPIO |
+| ----|------------| ---- |
+| VIN | USB | - |
+| GND | GND  | - |
+| SCL | SCL | 3|
+| SDA | SDA |2 |
+| DIN | 11  | 11 |
+| WSEL|  10   | 10  |
+| BCK |  9   | 9 |
+| RST | A0  | 26 | 
+
+![IMG_9671](https://github.com/user-attachments/assets/776145c9-5b22-4e44-b59b-11209ca80b3b)
+
+## Building from source
 
 If you want to build the project yourself, follow these steps:
 

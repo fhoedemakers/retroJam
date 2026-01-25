@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cmath>
 #include "pico/stdlib.h"
 #include "hardware/divider.h"
 #include "hardware/watchdog.h"
@@ -33,7 +34,11 @@ extern char *romName;
 static bool showSettings = false;
 static uint64_t start_tick_us = 0;
 static uint64_t fps = 0;
+#if 0 
+static char fpsString[9] = "000 000C";
+#else
 static char fpsString[4] = "000";
+#endif
 #define fpsfgcolor 0     // black
 #define fpsbgcolor 0xFFF // white
 
@@ -70,7 +75,7 @@ int audio_enabled = 1;               // Set to 1 to enable audio. Now disabled b
 // bool frameskip = audio_enabled; // was true
 bool sn76489_enabled = true;
 uint8_t snd_accurate = 1;
-
+int temperatureC = 0;
 extern unsigned char gwenesis_vdp_regs[0x20];
 extern unsigned int gwenesis_vdp_status;
 extern unsigned int screen_width, screen_height;
@@ -100,8 +105,8 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
     0,                               // DMG Palette (Genesis emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for Genesis)
     0,                               // Rapid Fire on A (not applicable)
@@ -175,6 +180,14 @@ static int ProcessAfterFrameIsRendered()
         dvi_->getFrameCounter();
 #else
         hstx_getframecounter();
+#endif
+#if 0  
+    if (settings.flags.displayFrameRate) {
+        // measure temperature every 2 seconds
+        if (hw_divider_s32_remainder_inlined(count, 120) == 0) {
+            temperatureC = static_cast<int>(std::round(Frens::read_onboard_temperature('C')));
+        }
+    }
 #endif
     auto onOff = hw_divider_s32_quotient_inlined(count, 60) & 1;
     Frens::blinkLed(onOff);
@@ -745,7 +758,7 @@ static void __not_in_flash_func(emulate)()
                     {
                         WORD *fpsBuffer = currentLineBuf + 5;
                         int rowInChar = scan_line % 8;
-                        for (auto i = 0; i < 3; i++)
+                        for (auto i = 0; i < strlen(fpsString); i++)
                         {
                             char firstFpsDigit = fpsString[i];
                             char fontSlice = getcharslicefrom8x8font(firstFpsDigit, rowInChar);
@@ -891,6 +904,14 @@ static void __not_in_flash_func(emulate)()
             fpsString[0] = '0' + (fps / 100) % 10;
             fpsString[1] = '0' + (fps / 10) % 10;
             fpsString[2] = '0' + (fps % 10);
+#if 0
+            fpsString[3] = ' ';
+            fpsString[4] = (temperatureC / 100) % 10 + '0';
+            fpsString[5] = (temperatureC / 10) % 10 + '0';
+            fpsString[6] = (temperatureC % 10) + '0';
+            fpsString[7] = 'C';
+            fpsString[8] = 0;
+#endif
             frame_counter++;
         }
     }
@@ -936,6 +957,7 @@ int md_main()
     audio_enabled = settings.flags.audioEnabled;
     next_frame_time = 0; // Reset next frame time for FPS limiter
     EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     memset(palette, 0, sizeof(palette));
     printf("Starting game\n");
     init_emulator_mem(HSTX);  // Use built-in malloc if HSTX is enabled

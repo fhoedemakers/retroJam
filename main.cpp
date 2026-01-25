@@ -44,8 +44,8 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (HW_CONFIG == 8),                // Fruit Jam Internal Speaker
-    (HW_CONFIG == 8),                // Fruit Jam Volume Control
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
     0,                               // DMG Palette (for GameBoy emulators)
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
@@ -70,25 +70,35 @@ void splash()
     strcpy(s, "retroJam");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 2, s, fgcolor, bgcolor);
 
-    strcpy(s, "Multi retro game Emulator");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 3, s, fgcolor, bgcolor);
-    
-    strcpy(s, "Adafruit Fruit Jam");
+    strcpy(s, "a multi retro game Emulator");
     putText(SCREEN_COLS / 2 - strlen(s) / 2, 4, s, fgcolor, bgcolor);
+    
+    strcpy(s, "for the Adafruit Fruit Jam");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 6, s, fgcolor, bgcolor);
 
     strcpy(s, "A project created by");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 8, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, fgcolor, bgcolor);
     strcpy(s, "@frenskefrens");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 9, s, CLIGHTBLUE, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 11, s, CLIGHTBLUE, bgcolor);
 
     strcpy(s, "Supported systems:");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 13, s, fgcolor, bgcolor);
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, fgcolor, bgcolor);
     
-    strcpy(s, "NES, Genesis/MD, SMS/Game Gear");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 14, s, CGREEN, bgcolor);
+    strcpy(s, "Nintendo Entertainment System");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 16, s, CGREEN, bgcolor);
     
-    strcpy(s, "GameBoy, GameBoy Color");
-    putText(SCREEN_COLS / 2 - strlen(s) / 2, 15, s, CGREEN, bgcolor);
+    strcpy(s, "Nintendo Game Boy");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CGREEN, bgcolor);
+
+    strcpy(s, "Nintendo Game Boy Color");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 18, s, CGREEN, bgcolor);
+
+    strcpy(s, "Sega Master System/Game Gear");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 19, s, CGREEN, bgcolor);
+
+    strcpy(s, "Sega Genesis/Mega Drive");
+    putText(SCREEN_COLS / 2 - strlen(s) / 2, 20, s, CGREEN, bgcolor);
+
 
     // strcpy(s, "(Emulators not yet implemented)");
     // putText(SCREEN_COLS / 2 - strlen(s) / 2, 17, s, CRED, bgcolor);
