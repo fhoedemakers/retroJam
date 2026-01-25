@@ -26,6 +26,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - GB Audio fixes.
 - Set volume to correct level when starting emulator.
 - More minor fixes and improvements.
+- Improved nespad driver. [@javavi](https://github.com/javavi)
 
 # v0.3 Release notes
 
