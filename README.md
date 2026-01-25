@@ -145,6 +145,8 @@ This config can be used for breadboard projects and requires the following hardw
   - When using a WII-Classic controller for input:
     - [Adafruit Wii Nunchuck Breakout Adapter - Qwiic / STEMMA QT](https://www.adafruit.com/product/4836)
 
+> [!NOTE]
+> Breadboard setups can introduce signal interference at higher clock speeds, which may result  in video artifacts when running Genesis emulation. [#7](https://github.com/fhoedemakers/retroJam/issues/7)
 
 How to Wire:
 
