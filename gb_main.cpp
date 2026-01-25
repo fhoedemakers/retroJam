@@ -272,7 +272,11 @@ static void inline processaudioPerFrameI2S()
 
     // Gain control: either shift (fast) or Q15 multiplier (define AUDIO_OUTPUT_GAIN_Q15).
 #ifndef AUDIO_OUTPUT_GAIN_SHIFT
+#if HW_CONFIG == 8
+#define AUDIO_OUTPUT_GAIN_SHIFT 2 // default attenuation ~ /16 to match DVI path 
+#else
 #define AUDIO_OUTPUT_GAIN_SHIFT 4 // default attenuation ~ /16 to match DVI path (was 2 previously => too quiet)
+#endif
 #endif
 
 #ifdef AUDIO_OUTPUT_GAIN_Q15
