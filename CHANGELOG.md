@@ -1,6 +1,14 @@
 # CHANGELOG
 
 A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav music files.
+
+# v0.5 Release notes
+
+## New Features
+
+- HDMI audio is now supported via the new HSTX video driver 🎉 Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driverthat made this possible.
+ Make sure to disable External Audio in the settings. 
+
 # v0.4 Release notes
 
 ## New Features
