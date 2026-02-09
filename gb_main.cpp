@@ -35,7 +35,7 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (EXT_AUDIO_IS_ENABLED), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
@@ -199,6 +199,34 @@ static void inline processaudioPerFrameDVI()
         ring.advanceWritePointer(n);
         i += n;
     }
+}
+#else
+// Global HDMI audio frame counter shared across HSTX audio paths
+static int g_hdmi_audio_frame_counter = 0;
+static void inline processaudioPerFrameHSTX() {
+    static audio_sample_t acc_buf[4];
+    static int acc_count = 0;
+    // For HSTX with PicoHDMI, we can use the same improved I2S path as non-HSTX, since PicoHDMI also uses I2S for audio output.
+     uint32_t *sample_buffer = (uint32_t *)audio_stream;
+    constexpr int kSamplesPerFrame = 738; // stereo frames (left/right packed)
+    int i = 0;
+    while (i < kSamplesPerFrame)
+    {
+
+        uint32_t packed = sample_buffer[i];
+        int16_t l = static_cast<int16_t>(packed >> 16);
+        int16_t r = static_cast<int16_t>(packed & 0xFFFF);
+#if ENABLE_VU_METER
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        } 
+#endif
+       l = l >> 2;
+         r = r >> 2;
+       hstx_push_audio_sample(l, r);
+       i++;
+    } 
 }
 #endif
 
@@ -374,7 +402,14 @@ void inline output_audio_per_frame()
     processaudioPerFrameDVI();
 #endif
 #else
-    processaudioPerFrameI2S();
+    if (settings.flags.useExtAudio == 1)
+    {
+        processaudioPerFrameI2S();
+    }
+    else
+    {
+        processaudioPerFrameHSTX();
+    }
 #endif
 }
 static DWORD prevButtons[2]{};
