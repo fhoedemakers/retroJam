@@ -387,29 +387,17 @@ static void inline processaudioPerFrameI2S()
 }
 void inline output_audio_per_frame()
 {
-
-#if !HSTX
 #if EXT_AUDIO_IS_ENABLED
     if (settings.flags.useExtAudio == 1)
     {
         processaudioPerFrameI2S();
+        return;
     }
-    else
-    {
-        processaudioPerFrameDVI();
-    }
-#else
-    processaudioPerFrameDVI();
 #endif
+#if !HSTX
+    processaudioPerFrameDVI();
 #else
-    if (settings.flags.useExtAudio == 1)
-    {
-        processaudioPerFrameI2S();
-    }
-    else
-    {
-        processaudioPerFrameHSTX();
-    }
+    processaudioPerFrameHSTX();
 #endif
 }
 static DWORD prevButtons[2]{};

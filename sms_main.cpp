@@ -1065,27 +1065,20 @@ static void in_ram(process)(void)
     {
         processinput(&pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         sms_frame(0);
-#if !HSTX
 #if EXT_AUDIO_IS_ENABLED
         if (settings.flags.useExtAudio == 1)
         {
             processaudioPerFrameI2S();
-        }
-        else
-        {
-            processaudioPerFrameDVI();
-        }
-#else
-        processaudioPerFrameDVI();
+        } else
 #endif
-#else
-        if (settings.flags.useExtAudio == 1)
         {
-            processaudioPerFrameI2S();
-        } else {
+#if !HSTX
+            processaudioPerFrameDVI();
+#else
+       
             processaudioPerFrameHSTX();
+#endif 
         }
-#endif // !HSTX
         ProcessAfterFrameIsRendered();
     }
 }
