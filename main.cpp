@@ -49,7 +49,8 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     0,                               // DMG Palette (for GameBoy emulators)
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
-    0                                // Rapid Fire on B
+    0,                                // Rapid Fire on B
+    1                                // Enter Bootsel Mode (always visible in menu)
 };
 
 const uint8_t g_available_screen_modes_main[] = {

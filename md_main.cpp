@@ -110,8 +110,8 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0,                               // DMG Palette (Genesis emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for Genesis)
     0,                               // Rapid Fire on A (not applicable)
-    0                                // Rapid Fire on B (not applicable)
-
+    0,                                // Rapid Fire on B (not applicable)
+    1                                // Enter Bootsel Mode (always visible in menu)
 };
 
 const uint8_t g_available_screen_modes_md[] = {

@@ -44,7 +44,8 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
-    0                                // Rapid Fire on B
+    0,                                // Rapid Fire on B
+    1                                // Enter Bootsel Mode (always visible in menu)
 
 };
 
