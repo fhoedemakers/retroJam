@@ -6,8 +6,9 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 
 ## New Features
 
-- HDMI audio is now supported via the new HSTX video driver 🎉 Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driverthat made this possible.
+- HDMI audio is now supported via the new HSTX video driver. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible.
  Make sure to disable External Audio in the settings. 
+- Added option in settings menu to enter bootsel mode for flashing firmware. 
 
 # v0.4 Release notes
 
@@ -36,25 +37,10 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - More minor fixes and improvements.
 - Improved nespad driver. [@javavi](https://github.com/javavi)
 
-# v0.3 Release notes
-
-## Fixes
-
-- Clock speed on Fruit Jam was set to an incorrect value for Genesis games, causing instability. Fixed.
-- Fixed an issue where writing to flash sometimes caused the system to hang without rebooting.
-- Other small fixes and improvements.
-
-# v0.2 Release notes
-
-## Fixes
-
-- WAV playback fixed.
-
-# v0.1 Release notes
-
-Initial release. Adafruit Fruit Jam only for now.
-There will be bugs! Please report them on GitHub.
-
 ## Metadata
 
 Extract the zip files to the root folder of the SD card. Select a game in the menu and press START to show more information and box art. Works for most official released games. Screensaver shows floating random cover art.
+
+# previous changes
+
+See [HISTORY.md](https://github.com/fhoedemakers/pico-peanutGB/blob/main/HISTORY.md)
