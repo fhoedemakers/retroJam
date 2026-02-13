@@ -40,7 +40,7 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (EXT_AUDIO_IS_ENABLED),          // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
