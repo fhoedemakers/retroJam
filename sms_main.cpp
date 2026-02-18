@@ -721,8 +721,8 @@ static void loadoverlay()
 
 static inline int ProcessAfterFrameIsRendered()
 {
-    //Frens::PaceFrames60fps(false);
-    Frens::waitForVSync();
+    Frens::PaceFrames60fps(false);
+    //Frens::waitForVSync();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif

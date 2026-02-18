@@ -759,8 +759,8 @@ static void __not_in_flash_func(process)()
     int frametime = 0;
     while (reset == false)
     {
-        //Frens::PaceFrames60fps(false);
-        Frens::waitForVSync();
+        Frens::PaceFrames60fps(false);
+        //Frens::waitForVSync();
         processinput(false, &pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         ti1 = Frens::time_us();
         emu_run_frame();
