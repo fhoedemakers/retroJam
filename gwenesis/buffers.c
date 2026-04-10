@@ -32,7 +32,7 @@ void init_emulator_mem(bool useSRAM)
     {
         printf("Using SRAM for emulator buffers");
         M68K_RAM = (unsigned char *)frens_f_malloc(MAX_RAM_SIZE);
-        ZRAM = (unsigned char *)malloc(MAX_Z80_RAM_SIZE);
+        ZRAM = (unsigned char *)frens_f_malloc(MAX_Z80_RAM_SIZE);
 // #if RETROJAM
 //         printf(", but VRAM will be allocated in PSRAM.\n");
 //         VRAM = (unsigned char *)frens_f_malloc(VRAM_MAX_SIZE); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
@@ -66,7 +66,7 @@ void free_emulator_mem(bool useSRAM)
     else
     {
         frens_f_free(M68K_RAM);
-        free(ZRAM);
+        frens_f_free(ZRAM);
 // #if RETROJAM
 //         frens_f_free(VRAM); // retroJam: not all buffers can be allocated in SRAM because of memory constraints
 // #else
