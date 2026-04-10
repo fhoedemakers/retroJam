@@ -4,7 +4,7 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE *Map85_Chr_Ram;  // [0x100 * 0x400];
+BYTE Map85_Chr_Ram[0x100 * 0x400];
 BYTE Map85_Regs[1];
 BYTE Map85_IRQ_Enable;
 BYTE Map85_IRQ_Cnt;
@@ -13,24 +13,11 @@ BYTE Map85_IRQ_Latch;
 /* The address of 1Kbytes unit of the Map85 Chr RAM */
 #define Map85_VROMPAGE(a) &Map85_Chr_Ram[(a)*0x400]
 
-void Map85_Exit()
-{
-    if (Map85_Chr_Ram)
-    {
-        printf("Freeing Mapper85 CHR RAM\n");
-        Frens::f_free(Map85_Chr_Ram);
-        Map85_Chr_Ram = nullptr;
-    }
-}
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 85                                             */
 /*-------------------------------------------------------------------*/
 void Map85_Init()
 {
-  printf("Initializing Mapper 85\n");
-  Map85_Chr_Ram = (BYTE *)Frens::f_malloc(0x100 * 0x400);
-
-  MapperExit = Map85_Exit;
   /* Initialize Mapper */
   MapperInit = Map85_Init;
 

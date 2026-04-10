@@ -46,6 +46,21 @@ extern BYTE DRAM[];
 #define PATTBL(a) (((a)-ChrBuf) >> 2)
 
 /*-------------------------------------------------------------------*/
+/*  Macros ( Mapper specific )                                       */
+/*-------------------------------------------------------------------*/
+
+/* The address of 8Kbytes unit of the Map5 WRAM */
+#if NES_MAPPER_5_ENABLED == 1
+extern BYTE *Map5_Wram;
+extern BYTE *Map5_Ex_Ram;
+extern BYTE *Map5_Ex_Vram;
+extern BYTE *Map5_Ex_Nam;
+extern BYTE Map5_Gfx_Mode;
+extern BYTE Map5_Chr_Upper;
+#define Map5_ROMPAGE(a) &Map5_Wram[((a)&0x07) * 0x2000]
+#endif
+
+/*-------------------------------------------------------------------*/
 /*  Table of Mapper initialize function                              */
 /*-------------------------------------------------------------------*/
 
@@ -89,6 +104,7 @@ void Map4_Set_PPU_Banks();
 
 void Map5_Init();
 void Map5_Write(WORD wAddr, BYTE byData);
+void Map5_Sram(WORD wAddr, BYTE byData);
 void Map5_Apu(WORD wAddr, BYTE byData);
 BYTE Map5_ReadApu(WORD wAddr);
 void Map5_HSync();
@@ -136,7 +152,6 @@ void Map18_Write(WORD wAddr, BYTE byData);
 void Map18_HSync();
 
 void Map19_Init();
-void Map19_Exit();
 void Map19_Write(WORD wAddr, BYTE byData);
 void Map19_Apu(WORD wAddr, BYTE byData);
 BYTE Map19_ReadApu(WORD wAddr);
@@ -165,6 +180,9 @@ void Map25_HSync();
 void Map26_Init();
 void Map26_Write(WORD wAddr, BYTE byData);
 void Map26_HSync();
+
+void Map30_Init();
+void Map30_Write(WORD wAddr, BYTE byData);
 
 void Map32_Init();
 void Map32_Write(WORD wAddr, BYTE byData);
@@ -486,6 +504,9 @@ void Map183_Init();
 void Map183_Write(WORD wAddr, BYTE byData);
 void Map183_HSync();
 
+void Map184_Init();
+void Map184_Sram(WORD wAddr, BYTE byData);
+
 void Map185_Init();
 void Map185_Write(WORD wAddr, BYTE byData);
 
@@ -526,6 +547,9 @@ void Map202_Init();
 void Map202_Apu(WORD wAddr, BYTE byData);
 void Map202_Write(WORD wAddr, BYTE byData);
 void Map202_WriteSub(WORD wAddr, BYTE byData);
+
+void Map206_Init();
+void Map206_Write(WORD wAddr, BYTE byData);
 
 void Map222_Init();
 void Map222_Write(WORD wAddr, BYTE byData);

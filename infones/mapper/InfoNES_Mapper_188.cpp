@@ -4,24 +4,13 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE *Map188_Dummy; // [ 0x2000 ];
+BYTE Map188_Dummy[ 0x2000 ];
 
-void Map189_Exit()
-{
-    if (Map188_Dummy)
-    {
-        Frens::f_free(Map188_Dummy);
-        Map188_Dummy = nullptr;
-    }
-}
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 188                                            */
 /*-------------------------------------------------------------------*/
 void Map188_Init()
 {
-  printf( "Initializing Mapper 188\n" );
-  Map188_Dummy = ( BYTE* ) Frens::f_malloc( 0x2000 );
-  MapperExit = Map189_Exit;
   /* Initialize Mapper */
   MapperInit = Map188_Init;
 

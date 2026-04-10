@@ -252,8 +252,6 @@ extern DWORD PAD2_Bit;
 
 /* Initialize Mapper */
 extern void (*MapperInit)();
-/* DeInitialize Mapper */
-extern void (*MapperExit)();
 /* Write to Mapper */
 extern void (*MapperWrite)(WORD wAddr, BYTE byData);
 /* Write to SRAM */

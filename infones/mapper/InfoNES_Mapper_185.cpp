@@ -4,23 +4,13 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE *Map185_Dummy_Chr_Rom;  // [ 0x400 ];
-void Map185_Exit()
-{
-    if (Map185_Dummy_Chr_Rom)
-    {
-        Frens::f_free(Map185_Dummy_Chr_Rom);
-        Map185_Dummy_Chr_Rom = nullptr;
-    }
-}
+BYTE Map185_Dummy_Chr_Rom[ 0x400 ];
+
 /*-------------------------------------------------------------------*/
 /*  Initialize Mapper 185                                            */
 /*-------------------------------------------------------------------*/
 void Map185_Init()
 {
-  printf( "Initializing Mapper 185\n" );
-  Map185_Dummy_Chr_Rom = ( BYTE* ) Frens::f_malloc( 0x400 );
-  MapperExit = Map185_Exit;
   /* Initialize Mapper */
   MapperInit = Map185_Init;
 
