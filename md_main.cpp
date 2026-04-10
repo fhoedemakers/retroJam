@@ -101,12 +101,13 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     1,                               // FPS Overlay
     1,                               // Audio Enable
     1,                               // Frame Skip
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
     (EXT_AUDIO_IS_ENABLED), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    //(USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (Genesis emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for Genesis)
     0,                               // Rapid Fire on A (not applicable)
@@ -172,6 +173,7 @@ void __not_in_flash_func(processaudio)(int line)
 
 static int ProcessAfterFrameIsRendered()
 {
+    EXT_AUDIO_POLL_HEADPHONE();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -970,7 +972,7 @@ int md_main()
     abSwapped = 0; // don't swap A and B buttons
     audio_enabled = settings.flags.audioEnabled;
     next_frame_time = 0; // Reset next frame time for FPS limiter
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    // EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     memset(palette, 0, sizeof(palette));
     printf("Starting game\n");

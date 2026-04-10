@@ -55,12 +55,13 @@ const int8_t g_settings_visibility_sms[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
     (EXT_AUDIO_IS_ENABLED), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    //(USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (SMS/Game Gear emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for SMS/Game Gear)
     0,                               // Rapid Fire on A
@@ -721,6 +722,7 @@ static void loadoverlay()
 
 static inline int ProcessAfterFrameIsRendered()
 {
+    EXT_AUDIO_POLL_HEADPHONE();
     Frens::PaceFrames60fps(false);
     //Frens::waitForVSync();
 #if NES_PIN_CLK != -1
@@ -1115,7 +1117,7 @@ int sms_main()
     reset = false;
     fileSize = 0;
     isGameGear = false;
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     // Detect rom type from memory
     // This is used to determine the rom size and type (SMS or GG)
@@ -1167,6 +1169,7 @@ int sms_main()
 
     system_reset();
     printf("Starting game\n");
+    Frens::PaceFrames60fps(true); 
     process();
     system_shutdown();
     selectedRom[0] = 0;

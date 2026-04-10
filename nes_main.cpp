@@ -56,12 +56,13 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED), // External Audio
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
+    (EXT_AUDIO_IS_ENABLED),          // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    // (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
@@ -730,8 +731,9 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    Frens::PaceFrames60fps(false);
-    //Frens::waitForVSync();
+    //Frens::PaceFrames60fps(false);
+    Frens::waitForVSync();
+    EXT_AUDIO_POLL_HEADPHONE();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -1014,7 +1016,7 @@ int nes_main()
 #endif
 
     reset = loadSaveStateMenu = false;
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     *ErrorMessage = 0;
     if (isAutoSaveStateConfigured())

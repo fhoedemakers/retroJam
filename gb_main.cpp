@@ -35,12 +35,13 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
     (EXT_AUDIO_IS_ENABLED), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    //(USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     1,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
@@ -761,6 +762,7 @@ static void __not_in_flash_func(process)()
     {
         Frens::PaceFrames60fps(false);
         //Frens::waitForVSync();
+         EXT_AUDIO_POLL_HEADPHONE();
         processinput(false, &pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         ti1 = Frens::time_us();
         emu_run_frame();
@@ -807,13 +809,14 @@ int gb_main()
 
     reset = false;
     printf("Initializing Game Boy Emulator\n");
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     loadoverlay(); // load default overlay
     emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
     uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);
     if (startemulation(rom, romName, GAMESAVEDIR, ErrorMessage, HSTX))
     {
+        Frens::PaceFrames60fps(true);
         process();
         stopemulation(romName, GAMESAVEDIR);
     }

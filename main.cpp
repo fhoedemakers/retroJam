@@ -40,12 +40,12 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
     (EXT_AUDIO_IS_ENABLED),          // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (for GameBoy emulators)
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
