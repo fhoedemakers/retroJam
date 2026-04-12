@@ -2,7 +2,13 @@
 
 A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav music files.
 
-# v0.6 Release notes
+# v0.5 Release notes
+
+## New Features
+
+- HDMI audio is now supported via the new HSTX video driver. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible.
+ Make sure to disable External Audio in the settings. 
+- Added option in settings menu to enter bootsel mode for flashing firmware. 
 
 ## New and improved Mapper support for NES emulator.
 
@@ -34,14 +40,9 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
 ## Fixes
 
 - Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
+- There was lag introduced in the NES emulator. This is fixed. [#9](https://github.com/fhoedemakers/retroJam/issues/9)
+- Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
 
-# v0.5 Release notes
-
-## New Features
-
-- HDMI audio is now supported via the new HSTX video driver. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible.
- Make sure to disable External Audio in the settings. 
-- Added option in settings menu to enter bootsel mode for flashing firmware. 
 
 # v0.4 Release notes
 
