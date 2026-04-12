@@ -722,7 +722,7 @@ static void loadoverlay()
 
 static inline int ProcessAfterFrameIsRendered()
 {
-    EXT_AUDIO_POLL_HEADPHONE();
+    Frens::pollHeadPhoneJack();
     Frens::PaceFrames60fps(false);
     //Frens::waitForVSync();
 #if NES_PIN_CLK != -1
@@ -1070,7 +1070,7 @@ static void in_ram(process)(void)
         processinput(&pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         sms_frame(0);
 #if EXT_AUDIO_IS_ENABLED
-        if (settings.flags.useExtAudio == 1)
+        if (settings.flags.useExtAudio == 1 || Frens::isHeadPhoneJackConnected())
         {
             processaudioPerFrameI2S();
         } else

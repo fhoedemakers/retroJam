@@ -390,7 +390,7 @@ static void inline processaudioPerFrameI2S()
 void inline output_audio_per_frame()
 {
 #if EXT_AUDIO_IS_ENABLED
-    if (settings.flags.useExtAudio == 1)
+    if (settings.flags.useExtAudio == 1 || Frens::isHeadPhoneJackConnected())
     {
         processaudioPerFrameI2S();
         return;
@@ -762,7 +762,7 @@ static void __not_in_flash_func(process)()
     {
         Frens::PaceFrames60fps(false);
         //Frens::waitForVSync();
-         EXT_AUDIO_POLL_HEADPHONE();
+        Frens::pollHeadPhoneJack();
         processinput(false, &pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         ti1 = Frens::time_us();
         emu_run_frame();

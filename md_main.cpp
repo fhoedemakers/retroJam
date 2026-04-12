@@ -173,7 +173,7 @@ void __not_in_flash_func(processaudio)(int line)
 
 static int ProcessAfterFrameIsRendered()
 {
-    EXT_AUDIO_POLL_HEADPHONE();
+    Frens::pollHeadPhoneJack();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -631,7 +631,7 @@ static void inline output_audio_per_frame()
     // 2. Generate all audio samples for the frame
     gwenesis_SN76489_run(target_clocks);
 #if EXT_AUDIO_IS_ENABLED
-    if (settings.flags.useExtAudio == 1)
+    if (settings.flags.useExtAudio == 1 || Frens::isHeadPhoneJackConnected())
     {
         processaudioPerFrameI2S();
         return;
