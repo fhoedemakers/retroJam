@@ -24,6 +24,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Fix corrupt graphics in Punch Out! and Fire Emblem Gaiden (JP)
 - Fix for roms with incorrect header info, like Galaxian (JP)
 - Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
+- Fix graphical issue in intro screen of Akumajou Densetsu (Castlevania III JP)
 
 
 Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
