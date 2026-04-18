@@ -29,6 +29,7 @@
 // Order must match enum in menu_options.h
 const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     -1,                              // No save state support
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
@@ -62,6 +63,7 @@ extern const unsigned char gb_overlay_555[];
 extern char *romName;
 static bool showSettings = false;
 static bool reset = false;
+static bool resetGame = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 static char fpsString[3] = "00";
@@ -637,6 +639,9 @@ static int ProcessAfterFrameIsRendered(bool frommenu)
         {
             reset = true;
         }
+         if (rval == 5) {
+           reset = resetGame = true;
+        }
         loadoverlay();                                                              // reload overlay to show any changes
         emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette); // in case palette was changed, GameBoy Specific
     }
@@ -806,20 +811,21 @@ int gb_main()
     }
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
-
-    reset = false;
-    printf("Initializing Game Boy Emulator\n");
-    //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
-    loadoverlay(); // load default overlay
-    emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
-    uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);
-    if (startemulation(rom, romName, GAMESAVEDIR, ErrorMessage, HSTX))
-    {
-        Frens::PaceFrames60fps(true);
-        process();
-        stopemulation(romName, GAMESAVEDIR);
-    }
-
+    do {
+        reset = false;
+        resetGame = false;
+        printf("Initializing Game Boy Emulator\n");
+        //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+        loadoverlay(); // load default overlay
+        emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
+        uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);
+        if (startemulation(rom, romName, GAMESAVEDIR, ErrorMessage, HSTX))
+        {
+            Frens::PaceFrames60fps(true);
+            process();
+            stopemulation(romName, GAMESAVEDIR);
+        }
+    } while (resetGame);
     return 0;
 }
