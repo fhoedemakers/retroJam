@@ -49,6 +49,7 @@ extern const unsigned char sms_overlay_555[];
 
 const int8_t g_settings_visibility_sms[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
@@ -94,7 +95,7 @@ const uint8_t g_available_screen_modes_sms[] = {
 #define FPSEND ((FPSSTART) + 8)
 
 static bool reset = false;
-
+static bool resetGame = false;
 #if WII_PIN_SDA >= 0 and WII_PIN_SCL >= 0
 // Cached Wii pad state updated once per frame in ProcessAfterFrameIsRendered()
 static uint16_t wiipad_raw_cached = 0;
@@ -782,6 +783,10 @@ static inline int ProcessAfterFrameIsRendered()
             loadSaveStateMenu = true;
             quickSaveAction = SaveStateTypes::NONE;
         }
+        if ( rval == 5)
+        {
+            reset = resetGame = true;
+        }
         loadoverlay();
     }
     if (loadSaveStateMenu)
@@ -1160,18 +1165,22 @@ int sms_main()
     {
         printf("No auto-save configured for this ROM.\n");
     }
-    loadoverlay();
-    load_rom(ROM_FILE_ADDR, fileSize, isGameGear);
-    // Initialize all systems and power on
-    system_init(SMS_AUD_RATE);
-    // load state if any
-    // system_load_state();
+    do {
+        reset = resetGame = false;
+        loadoverlay();
+        load_rom(ROM_FILE_ADDR, fileSize, isGameGear);
+        // Initialize all systems and power on
+        system_init(SMS_AUD_RATE);
+        // load state if any
+        // system_load_state();
 
-    system_reset();
-    printf("Starting game\n");
-    Frens::PaceFrames60fps(true); 
-    process();
-    system_shutdown();
+        system_reset();
+        printf("Starting game\n");
+        Frens::PaceFrames60fps(true); 
+        process();
+        system_shutdown();
+        
+    } while(resetGame);
     selectedRom[0] = 0;
 #if ENABLE_VU_METER
     turnOffAllLeds();
