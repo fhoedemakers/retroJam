@@ -50,6 +50,7 @@ static int g_record_gain_q8 = RECORD_GAIN_Q8;
 // Order must match enum in menu_options.h
 const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
@@ -263,6 +264,7 @@ static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
 static bool reset = false;
+static bool resetGame = false;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -461,7 +463,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     {
         saveNVRAM();
     }
-    *pdwSystem = reset ? PAD_SYS_QUIT : 0;
+    *pdwSystem = ( reset || resetGame ) ? PAD_SYS_QUIT : 0;
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -822,6 +824,9 @@ int InfoNES_LoadFrame()
             quickSaveAction = SaveStateTypes::NONE;
            
         }
+        if (rval == 5) {
+           resetGame = true;
+        }
     }
     if (loadSaveStateMenu) {
         if (quickSaveAction == SaveStateTypes::LOAD_AND_START) {
@@ -1044,7 +1049,7 @@ int nes_main()
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
 
-    reset = loadSaveStateMenu = false;
+    reset = resetGame = loadSaveStateMenu = false;
     //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     *ErrorMessage = 0;
@@ -1070,7 +1075,10 @@ int nes_main()
     {
         printf("No auto-save configured for this ROM.\n");
     }
-    romSelector_.init(ROM_FILE_ADDR);
-    InfoNES_Main();
+     do {
+        resetGame = false;
+        romSelector_.init(ROM_FILE_ADDR);
+        InfoNES_Main();
+     } while (resetGame);
     return 0;
 }
