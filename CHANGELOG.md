@@ -9,6 +9,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - HDMI audio is now supported via the new HSTX video driver. Huge thanks to [@fliperama86](https://github.com/fliperama86) for the awesome [pico_hdmi](https://github.com/fliperama86/pico_hdmi) driver that made this possible.
  Make sure to disable External Audio in the settings. 
 - Added option in settings menu to enter bootsel mode for flashing firmware. 
+- Added "reset game" to the in-game settings menu.
 
 ## New and improved Mapper support for NES emulator.
 
