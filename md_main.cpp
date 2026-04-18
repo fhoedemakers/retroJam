@@ -49,7 +49,7 @@ static char fpsString[4] = "000";
 #define FPSEND ((FPSSTART) + 8)
 
 static bool reset = false;
-static bool reboot = false;
+static bool resetGame = false;
 
 extern unsigned short button_state[3];
 // uint16_t __scratch_y("gen_palette1") palette444_1[64];
@@ -95,6 +95,7 @@ static uint16_t wiipad_raw_cached = 0;
 
 const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     -1,                              // No save states/restore states for Genesis
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
@@ -219,7 +220,12 @@ static int ProcessAfterFrameIsRendered()
         abSwapped = 0;
         if (rval == 3)
         {
-            reboot = true;
+            reset = true;
+        }
+         if (rval == 5)
+        {
+            reset = true;
+            resetGame = true;
         }
         // audio_enabled may be changed from settings menu, Genesis specific
         audio_enabled = settings.flags.audioEnabled;
@@ -654,7 +660,7 @@ static void __not_in_flash_func(emulate)()
     unsigned int old_screen_height = 0;
     char tbuf[32];
 
-    while (!reboot)
+    while (!reset)
     {
         /* Eumulator loop */
         int hint_counter = gwenesis_vdp_regs[10];
@@ -931,8 +937,6 @@ static void __not_in_flash_func(emulate)()
             frame_counter++;
         }
     }
-
-    reboot = false;
 }
 
 /// @brief
@@ -967,21 +971,24 @@ int md_main()
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
 
-    reset = false;
+   
 
     abSwapped = 0; // don't swap A and B buttons
     audio_enabled = settings.flags.audioEnabled;
-    next_frame_time = 0; // Reset next frame time for FPS limiter
-    // EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
-    memset(palette, 0, sizeof(palette));
-    printf("Starting game\n");
-    init_emulator_mem(HSTX);  // Use built-in malloc if HSTX is enabled
-    load_cartridge(ROM_FILE_ADDR); // ROM_FILE_ADDR); // 0x100de000); // 0x100d1000);  // 0x100e2000); // ROM_FILE_ADDR);
-    power_on();
-    reset_emulation();
-    emulate();
-    free_emulator_mem(HSTX);
-
+   
+    do {
+        reset = resetGame = false;
+        next_frame_time = 0; // Reset next frame time for FPS limiter
+        // EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+        memset(palette, 0, sizeof(palette));
+        printf("Starting game\n");
+        init_emulator_mem(HSTX);  // Use built-in malloc if HSTX is enabled
+        load_cartridge(ROM_FILE_ADDR); // ROM_FILE_ADDR); // 0x100de000); // 0x100d1000);  // 0x100e2000); // ROM_FILE_ADDR);
+        power_on();
+        reset_emulation();
+        emulate();
+        free_emulator_mem(HSTX);      
+    } while (resetGame);
     return 0;
 }
