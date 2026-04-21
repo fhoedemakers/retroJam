@@ -129,7 +129,7 @@ int main()
     Frens::setClocksAndStartStdio(CPUFreqKHz, voltage);
     printf("Checking flash params at 0x%08X\n", (uintptr_t)flashParams);
     printf("==========================================================================================\n");
-    printf("Picomulator %s\n", SWVERSION);
+    printf("retroJam %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
