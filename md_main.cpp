@@ -973,10 +973,11 @@ int md_main()
 
    
 
-    abSwapped = 0; // don't swap A and B buttons
+  
     audio_enabled = settings.flags.audioEnabled;
    
     do {
+          abSwapped = 0; // don't swap A and B buttons
         reset = resetGame = false;
         next_frame_time = 0; // Reset next frame time for FPS limiter
         // EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);

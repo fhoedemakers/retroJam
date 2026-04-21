@@ -45,6 +45,7 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
 - Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
 - There was lag introduced in the NES emulator. This is fixed. [#9](https://github.com/fhoedemakers/retroJam/issues/9)
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
+- Master System/Game Gear: The first pixels to the left of the screen are no longer cut-off.
 
 
 # v0.4 Release notes
