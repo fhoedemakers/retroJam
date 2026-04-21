@@ -150,6 +150,7 @@ target_compile_definitions(${projectname} PRIVATE
     LSB_FIRST=1                     # SMS emulator LSB first input
     MB_SMS=1                        # SMS emulator Megabios support (Needed?)
     RETROJAM=1                       # retroJam specific code adjustments
+    #HSTX_DEBUG=1
 
 )
 
