@@ -27,6 +27,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Fix for Robocop 3 (USA) not starting and only showing a black screen instead. (Mapper 1 fix, see [#185](https://github.com/fhoedemakers/pico-infonesPlus/issues/185)) 
 - Fix graphical issue in intro screen of Akumajou Densetsu (Castlevania III JP)
 - Fix sound effects (e.g. whip) disappearing after a few screens in Castlevania III US (mapper 5) and Castlevania III JP (mapper 24). The APU `$4015` status register now correctly reflects actual channel/DPCM state rather than the last-written value.
+- Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23
 
 
 Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
