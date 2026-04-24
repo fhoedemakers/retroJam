@@ -630,7 +630,7 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 }
 
 
-void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
+void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
 #if !HSTX
     while (samples)
@@ -653,10 +653,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
+            /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+            int w6 = wave6 ? *wave6++ : 0;
             // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
             // w3 = 0; // Disable triangle channel
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
@@ -709,14 +711,16 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = wave3[i];
         int w4 = wave4[i];
         int w5 = wave5[i];
+        /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+        int w6 = wave6 ? wave6[i] : 0;
 
         // Mix your channels to a 12-bit value (example mix, adjust as needed)
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
 
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
         const int l0 = l;
         const int r0 = r;
 
@@ -737,9 +741,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             continue;
         }
     #endif
+        
         int gl = apply_dvi_gain_i32(l0);
         int gr = apply_dvi_gain_i32(r0);
         hstx_push_audio_sample(gl, gr);
+        
+        // outBuffer[outIndex++] = sample8;
     }
 #endif
 }
