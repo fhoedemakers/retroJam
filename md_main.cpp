@@ -686,6 +686,7 @@ static void __not_in_flash_func(emulate)()
         system_clock = 0;
         sn76489_clock = 0;
         sn76489_index = 0;
+        ym2612_clock = 0;
         scan_line = 0;
         if (z80_enable_mode == 1)
             z80_run(lines_per_frame * VDP_CYCLES_PER_LINE);
