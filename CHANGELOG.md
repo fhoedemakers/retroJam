@@ -48,7 +48,8 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
 - There was lag introduced in the NES emulator. This is fixed. [#9](https://github.com/fhoedemakers/retroJam/issues/9)
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
 - Master System/Game Gear: The first pixels to the left of the screen are no longer cut-off.
-- Master System/Game Gear: Fix Save state regression introduced in v0.4 where loading a state crashed the emulator because of heap corruption
+- Master System/Game Gear: Fix Save state regression introduced in v0.4 where loading a state crashed the emulator because of heap corruption.
+- Genesis: SGDK games can now be started. ( XenoCrisis ).
 
 
 # v0.4 Release notes
