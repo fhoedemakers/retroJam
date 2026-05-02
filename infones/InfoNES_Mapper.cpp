@@ -17,13 +17,16 @@
 #include "FrensHelpers.h"
 #include "K6502.h"
 #include <pico.h>
+#if PICO_RP2350
+#include "InfoNES_FDS.h"
+#endif
 
 /*-------------------------------------------------------------------*/
 /*  Mapper resources                                                 */
 /*-------------------------------------------------------------------*/
 
 /* Disk System RAM */
-BYTE DRAM[DRAM_SIZE];
+BYTE *DRAM;   // [DRAM_SIZE];
 
 /*-------------------------------------------------------------------*/
 /*  Table of Mapper initialize function                              */
@@ -36,7 +39,7 @@ const struct MapperTable_tag MapperTable[] =
         {2, Map2_Init},
         {3, Map3_Init},
         {4, Map4_Init},
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
         {5, Map5_Init},
 #endif
         // {6, Map6_Init},
@@ -51,6 +54,9 @@ const struct MapperTable_tag MapperTable[] =
         {17, Map17_Init},
         {18, Map18_Init},
         {19, Map19_Init},
+#if PICO_RP2350
+        {20, Map20_Init},
+#endif
         {21, Map21_Init},
         {22, Map22_Init},
         {23, Map23_Init},
@@ -97,7 +103,9 @@ const struct MapperTable_tag MapperTable[] =
         {80, Map80_Init},
         {82, Map82_Init},
         {83, Map83_Init},
-        //  {  85, Map85_Init  },
+#if PICO_RP2350
+        {85, Map85_Init},
+#endif
         {86, Map86_Init},
         {87, Map87_Init},
         {88, Map88_Init},
@@ -184,7 +192,7 @@ const struct MapperTable_tag MapperTable[] =
 #include "mapper/InfoNES_Mapper_002.cpp"
 #include "mapper/InfoNES_Mapper_003.cpp"
 #include "mapper/InfoNES_Mapper_004.cpp"
-#if NES_MAPPER_5_ENABLED == 1
+#if PICO_RP2350
 #include "mapper/InfoNES_Mapper_005.cpp"
 #endif
 // #include "mapper/InfoNES_Mapper_006.cpp"
@@ -199,6 +207,9 @@ const struct MapperTable_tag MapperTable[] =
 #include "mapper/InfoNES_Mapper_017.cpp"
 #include "mapper/InfoNES_Mapper_018.cpp"
 #include "mapper/InfoNES_Mapper_019.cpp"
+#if PICO_RP2350
+#include "mapper/InfoNES_Mapper_020.cpp"
+#endif
 #include "mapper/InfoNES_Mapper_021.cpp"
 #include "mapper/InfoNES_Mapper_022.cpp"
 #include "mapper/InfoNES_Mapper_023.cpp"

@@ -5,6 +5,8 @@ INTERFACE
     InfoNES_Mapper.cpp
     InfoNES_pAPU.cpp
     InfoNES.cpp
+    InfoNES_Region.cpp
+    InfoNES_FDS.cpp
     K6502.cpp
 )
 

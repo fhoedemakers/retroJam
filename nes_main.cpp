@@ -8,6 +8,8 @@
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES_Region.h"
+#include "InfoNES_FDS.h"
 #include "ff.h"
 #include "tusb.h"
 #include "gamepad.h"
@@ -45,10 +47,24 @@ static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
 #endif
 static int g_record_gain_q8 = RECORD_GAIN_Q8;
 
+#if PICO_RP2350
+static const MenuFdsHooks fdsMenuHooks = {
+    fdsCurrentSwapValue,
+    fdsGetNumSides,
+    fdsRequestSwap,
+    fdsRequestEject
+};
+#endif
+
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
+//
+// Non-const so the FDS disk-swap entry can be flipped on per-ROM after
+// fdsParse() detects we're loading a .fds. The pointer in
+// `g_settings_visibility` is `const int8_t *`, but it can point at
+// non-const storage just fine.
+int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
     0,                               // Reset Game. Always visible when in-game.
     0,                               // Save / Restore State
@@ -68,8 +84,8 @@ const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
     1,                               // Rapid Fire on B
-    1                                // Enter Bootsel Mode
-
+    1,                               // Enter Bootsel Mode
+    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 
 const uint8_t g_available_screen_modes_nes[] = {
@@ -165,6 +181,19 @@ void saveNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar persistence is disabled until the Mesen2-style
+           expanded-image refactor lands — without it, our writes
+           corrupt the raw .fds layout, so we must not save those
+           bytes back to /SAVES or they'll wreck the next session.
+           Keep the function body so the dispatch wiring stays
+           intact for when the refactor lands. */
+        (void)pad;
+        return;
+    }
+#endif
     if (!SRAMwritten)
     {
         printf("SRAM not updated.\n");
@@ -201,6 +230,17 @@ bool loadNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar load disabled — see saveNVRAM for rationale. With a
+           pristine disk image, FDS games run their stock state on every
+           launch (no save persistence yet, but no corruption either). */
+        (void)pad;
+        return true;
+    }
+#endif
 
     snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
 
@@ -488,6 +528,35 @@ void InfoNES_Error(const char *pszMsg, ...)
 }
 bool parseROM(const uint8_t *nesFile)
 {
+#if PICO_RP2350
+    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
+    // via flashromtoPsram (same path as .nes); look up its size from the
+    // file on SD so we can determine side count and strip any fwNES header.
+    if (fdsIsFdsFilename(romName))
+    {
+        FILINFO fno;
+        if (f_stat(romName, &fno) != FR_OK)
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "Cannot stat FDS file %s", romName);
+            printf("%s\n", ErrorMessage);
+            return false;
+        }
+        if (!fdsParse((BYTE *)nesFile, (size_t)fno.fsize))
+        {
+            // fdsParse already populated ErrorMessage via InfoNES_Error.
+            return false;
+        }
+        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
+        ROM = nullptr;
+        VROM = nullptr;
+        // Phase 5: expose disk-swap option in the in-game settings menu.
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        menuSetFdsHooks(&fdsMenuHooks);
+        return true;
+    }
+#endif
+
     memcpy(&NesHeader, nesFile, sizeof(NesHeader));
     if (!checkNESMagic(NesHeader.byID))
     {
@@ -548,6 +617,15 @@ void InfoNES_ReleaseRom()
 {
     ROM = nullptr;
     VROM = nullptr;
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        fdsRelease();
+        IsFDS = false;
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 0;
+        menuSetFdsHooks(nullptr);
+    }
+#endif
 }
 
 void InfoNES_SoundInit()
@@ -753,6 +831,44 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 
 extern WORD PC;
 
+// Region-aware frame pacing.
+//   NTSC: forwards to Frens::PaceFrames60fps (preserves the existing HSTX
+//         vsync-wait and non-HSTX vsync/line-buffer behavior verbatim).
+//   PAL : 50 Hz pacing via sleep_until. The HDMI/DVI panel still scans at
+//         60 Hz, so 1 in every 6 displayed frames will be a duplicate; the
+//         emulator itself runs at correct PAL speed. Works on HSTX (replaces
+//         hstx_paceFrame's 60 Hz vsync wait) and on non-HSTX framebuffer
+//         mode (replaces the vsync busy-wait). PAL is rejected upstream
+//         when no framebuffer is available — see fallback at the call site.
+static void paceFrame(bool init)
+{
+    if (!InfoNES_IsPal())
+    {
+        Frens::PaceFrames60fps(init);
+        return;
+    }
+
+    static absolute_time_t next_frame_time;
+    static bool initialized = false;
+    if (init || !initialized)
+    {
+        next_frame_time = make_timeout_time_us(0);
+        initialized = true;
+    }
+
+    // Slack-aware: if we overran the target by more than one frame (e.g.
+    // returning from the menu after an idle pause), snap forward instead of
+    // bursting through the backlog. Mirrors hstx_paceFrame's resync logic.
+    absolute_time_t now = get_absolute_time();
+    if (absolute_time_diff_us(now, next_frame_time) <= -20000)
+    {
+        next_frame_time = now;
+    }
+
+    sleep_until(next_frame_time);
+    next_frame_time = delayed_by_us(next_frame_time, 20000); // 1/50s = 20000us
+}
+
 int InfoNES_LoadFrame()
 {
 //      if (pendingLoadState) {         // perform at frame start
@@ -769,8 +885,8 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    //Frens::PaceFrames60fps(false);
-    Frens::waitForVSync();
+    paceFrame(false);
+    //Frens::waitForVSync();
     Frens::pollHeadPhoneJack();
 #if NES_PIN_CLK != -1
     nespad_read_start();
@@ -1084,8 +1200,39 @@ int nes_main()
     }
      do {
         resetGame = false;
-        romSelector_.init(ROM_FILE_ADDR);
-        InfoNES_Main();
+#if PICO_RP2350
+        if (fdsIsFdsFilename(romName))
+        {
+            romSelector_.initRaw(ROM_FILE_ADDR);
+        }
+        else
+#endif
+        if (!romSelector_.init(ROM_FILE_ADDR)) {
+            strcpy(ErrorMessage, "Not a NES ROM file.");
+            break;
+        }
+
+        // isRomPal: 0 = NTSC, 1 = PAL, 2 = Dendy.
+        int region = InfoNES_DetectRegion(ROM_FILE_ADDR, Frens::getCrcOfLoadedRom(), romName);
+        static const char *regionNames[] = { "NTSC", "PAL", "Dendy" };
+        const char *regionName = regionNames[region & 3];
+
+        // PAL/Dendy require a framebuffer-based video pipeline. In non-HSTX
+        // line-streaming mode (RP2040, no framebuffer) the line-buffer
+        // queue is hardware-locked to the DVI 60 Hz scanline rate, so
+        // pacing the emulator at 50 Hz starves the queue (flicker) and
+        // the audio ring buffer (silence). Force NTSC there.
+#if !HSTX
+        if (region != INFONES_REGION_NTSC && !Frens::isFrameBufferUsed())
+        {
+            printf("%s not supported in line-streaming mode (no framebuffer); running as NTSC.\n", regionName);
+            region = INFONES_REGION_NTSC;
+            regionName = regionNames[0];
+        }
+#endif
+        printf("Region: %s\n", regionName);
+        paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
+        InfoNES_Main(region);
      } while (resetGame);
     return 0;
 }
