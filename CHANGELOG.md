@@ -11,7 +11,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Added option in settings menu to enter bootsel mode for flashing firmware. 
 - Added "reset game" to the in-game settings menu.
 
-## New and improved Mapper support for NES emulator.
+## NES emulator
 
 - Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
   - Castlevania III US
@@ -35,6 +35,9 @@ Many thanks to [@szuping](https://github.com/szuping) for testing the mapper cha
 
 Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
 
+## Genesis
+- SGDK games can be played. (XenoCrisis). Sound is limited. Only music, no sound effects. Overall sound quality is poor.
+  
 ## Display & audio
 
 - **Adafruit Fruit Jam:**
@@ -49,7 +52,6 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
 - Master System/Game Gear: The first pixels to the left of the screen are no longer cut-off.
 - Master System/Game Gear: Fix Save state regression introduced in v0.4 where loading a state crashed the emulator because of heap corruption.
-- Genesis: SGDK games can now be started. ( XenoCrisis ).
 
 
 # v0.4 Release notes
