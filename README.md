@@ -19,7 +19,7 @@ Click on image below to see a demo video.
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
-- `.nes` - Nintendo Entertainment System. With save state support.
+- `.nes` - Nintendo Entertainment System. With save state support. Also plays Famicom Disk System games (`.fds`). See [#famicom-disk-system-fds-games](#famicom-disk-system-fds-games) for limitations regarding FDS games.
 - `.gg` - Sega Game Gear - With save state support.
 - `.sms` - Sega Master System - With save state support.
 - `.gb` - Nintendo GameBoy
@@ -86,6 +86,25 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 
   The mapper number is also shown in the Save State screen.
 
+# Famicom Disk System (FDS) Games
+
+FDS games are supported with the following limitations:
+
+- A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
+- An RP2350 board with PSRAM is required.
+- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
+- Expansion audio is not supported.
+
+See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
+
+### Swapping Disks
+
+When prompted to swap disks, use the in-game settings menu:
+
+1. Press **SELECT + START** to open the settings menu.
+2. Select the first option to change the disk.
+3. Press **LEFT/RIGHT** to choose the disk side.
+4. Press **Button2** to confirm and return.
 
 ## Using Metadata
 
