@@ -12,7 +12,8 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Added "reset game" to the in-game settings menu.
 
 ## NES
-
+- Famicom Disk System (.fds) support on RP2350 boards with PSRAM (with limitations—see [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195)). Requires a BIOS file at `/bios/fds-bios.rom`. Disk swapping is done via the settings menu (SELECT+START).
+- PAL/Dendy games now run at the correct frame rate (50Hz instead of 60Hz).
 - Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
   - Castlevania III US
   - Gemfire (USA version)
@@ -29,11 +30,23 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Fix sound effects (e.g. whip) disappearing after a few screens in Castlevania III US (mapper 5) and Castlevania III JP (mapper 24).
 - Fix for black screen in Akumajou Special: Boku Dracula-kun - Mapper 23
 - Fix for Gimmick! (JP) showing only the HUD with a black playfield after pressing Start. [#187](https://github.com/fhoedemakers/pico-infonesPlus/issues/187)
+- Added Sunsoft 5B expansion audio emulation for Mapper 69 (Gimmick!, Hebereke).
+- Battletoads - Double Dragon - fixed missing sound effects.
+- Double Dragon - partial fix for sound glitch.
+- There was lag introduced in the NES emulator. This is fixed. [#9](https://github.com/fhoedemakers/retroJam/issues/9)
+- Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
+- Removed 40K fixed buffer used for Mapper 235 from heap memory.
 
 
 Many thanks to [@szuping](https://github.com/szuping) for testing the mapper changes.
 
 Mapper fixes were developed with the help of [Anthropic Claude](https://www.anthropic.com/claude/opus).
+
+## Master System / Game Gear
+
+- The first pixels to the left of the screen are no longer cut-off.
+- Fix Save state regression introduced in v0.4 where loading a state crashed the emulator because of heap corruption.
+
 
 ## Genesis
 - SGDK games can be played. (XenoCrisis). Sound is limited. Only music, no sound effects. Overall sound quality is poor.
@@ -44,14 +57,13 @@ Mapper fixes were developed with the help of [Anthropic Claude](https://www.anth
   - Headphone detection now works correctly. Plugging in headphones automatically mutes the speaker (Internal or monitor); unplugging them re-enables it.
   - The external audio setting, when enabled, enables the Fruit Jam built-in speaker. Audio is muted from the monitor.
   - Removed the setting and pushbutton1 functionality for muting the internal speaker. Headphone detection now automatically mutes the internal speaker.
+- DVI mode: added watchdog function on core 1 to recover from occasional signal drops.
+
 
 ## Fixes
 
-- Updated the metadata and cover art pack with missing entries, including artwork for several Japanese titles. See the [Downloads section](#downloads___) below for the download link and instructions. Thanks again to [@DynaMight1124](https://github.com/DynaMight1124)
-- There was lag introduced in the NES emulator. This is fixed. [#9](https://github.com/fhoedemakers/retroJam/issues/9)
 - Fixed a bug where sorting large directory contents could cause a stack overflow; now uses a safer sorting method to prevent this issue. 
-- Master System/Game Gear: The first pixels to the left of the screen are no longer cut-off.
-- Master System/Game Gear: Fix Save state regression introduced in v0.4 where loading a state crashed the emulator because of heap corruption.
+
 
 
 # v0.4 Release notes
