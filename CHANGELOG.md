@@ -11,7 +11,7 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 - Added option in settings menu to enter bootsel mode for flashing firmware. 
 - Added "reset game" to the in-game settings menu.
 
-## NES emulator
+## NES
 
 - Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
   - Castlevania III US
