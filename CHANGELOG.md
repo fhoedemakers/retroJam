@@ -13,12 +13,12 @@ A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a fe
 
 ## New and improved Mapper support for NES emulator.
 
-- **RP2350 only:** Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
+- Added support for Mapper 5 (MMC5 – *Castlevania III* US). Graphical glitches may still occur. These MMC 5 games are tested:
   - Castlevania III US
   - Gemfire (USA version)
   - Romance of the Three Kingdoms II (Japanese version)
   - Nobunaga’s Ambition II (Japanese/USA version)
-- **All platforms (RP2040/RP2350):** Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).
+- Added support for Mapper 24 (VRC6A – *Castlevania III/Akumajou Densetsu* JP).
 - Mapper 30 (NesMaker) now working.
 - Fix HUD not displaying in Parodius DA! (Jap) - mapper 23
 - Fix HUD not displaying in Fudou Myouou Den (Japan) - mapper 80
