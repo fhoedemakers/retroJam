@@ -51,7 +51,8 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
     0,                               // Rapid Fire on B
-    1                                // Enter Bootsel Mode
+    1,                                // Enter Bootsel Mode
+    0,                               // FDS Disk Swap (only for FDS games on NES emulator)
 };
 
 const uint8_t g_available_screen_modes_main[] = {
