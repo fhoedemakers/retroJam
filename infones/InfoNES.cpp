@@ -108,7 +108,9 @@ BYTE *SPRRAM;
 //   return SPRRAM;
 // }
 /* Scanline Table */
-BYTE PPU_ScanTable[263];
+/* Sized for the largest region (PAL/Dendy: 312 scanlines). NTSC uses indices
+ * 0..261; PAL/Dendy use 0..311. The init loop fills the full range. */
+BYTE PPU_ScanTable[312];
 #pragma endregion
 
 bool SRAMwritten = false;
@@ -213,7 +215,7 @@ WORD WorkFrameIdx;
 #else
 // WORD WorkFrame[ NES_DISP_WIDTH * NES_DISP_HEIGHT ];
 WORD *WorkLine = nullptr;
-void (InfoNES_SetLineBuffer)(WORD *p, WORD size)
+void __not_in_flash_func(InfoNES_SetLineBuffer)(WORD *p, WORD size)
 {
   assert(size >= NES_DISP_WIDTH);
   WorkLine = p;
@@ -225,6 +227,12 @@ BYTE ChrBufUpdate;
 
 /* Palette Table */
 WORD PalTable[32];
+
+/* Region-dependent timing. Defaults to NTSC; InfoNES_SetRegion() overrides. */
+WORD STEP_PER_SCANLINE = 114;
+WORD STEP_PER_FRAME    = 29780;
+WORD SCAN_VBLANK_START = 241;
+WORD SCAN_VBLANK_END   = 261;
 
 /* Table for Mirroring */
 BYTE PPU_MirrorTable[][4] =
@@ -259,8 +267,6 @@ DWORD PAD2_Bit;
 
 /* Initialize Mapper */
 void (*MapperInit)();
-/* DeInitialize Mapper */
-void (*MapperExit)();
 /* Write to Mapper */
 void (*MapperWrite)(WORD wAddr, BYTE byData);
 /* Write to SRAM */
@@ -302,6 +308,9 @@ BYTE ROM_Trainer;
 /* Four screen VRAM  */
 BYTE ROM_FourScr;
 
+/* True when the loaded image is a Famicom Disk System disk (no iNES header). */
+bool IsFDS = false;
+
 /*===================================================================*/
 /*                                                                   */
 /*                InfoNES_Init() : Initialize InfoNES                */
@@ -316,33 +325,23 @@ void InfoNES_Init()
    *    Initialize memory, K6502 and Scanline Table.
    */
 
- #if 0
   RAM = (BYTE *)Frens::f_malloc(RAM_SIZE);
   SRAM = (BYTE *)Frens::f_malloc(SRAM_SIZE);
   PPURAM = (BYTE *)Frens::f_malloc(PPURAM_SIZE);
   SPRRAM = (BYTE *)Frens::f_malloc(SPRRAM_SIZE);
   ChrBuf = (BYTE *)Frens::f_malloc(CHRBUF_SIZE);
-#else
-  RAM = (BYTE *)malloc(RAM_SIZE);
-  SRAM = (BYTE *)malloc(SRAM_SIZE);
-  PPURAM = (BYTE *)malloc(PPURAM_SIZE);
-  SPRRAM = (BYTE *)malloc(SPRRAM_SIZE);
-  ChrBuf = (BYTE *)malloc(CHRBUF_SIZE);
-#endif
 
   int nIdx;
 
   // Initialize 6502
   K6502_Init();
 
-  // Initialize Scanline Table
-  for (nIdx = 0; nIdx < 263; ++nIdx)
+  // Initialize Scanline Table over the full PAL/Dendy range. SCAN_VBLANK_START
+  // is region-dependent (241 for NTSC/PAL, 291 for Dendy) so post-render and
+  // vblank boundaries land in the right place per region.
+  for (nIdx = 0; nIdx < (int)(sizeof PPU_ScanTable); ++nIdx)
   {
-    if (nIdx < SCAN_ON_SCREEN_START)
-      PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
-    else if (nIdx < SCAN_BOTTOM_OFF_SCREEN_START)
-      PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
-    else if (nIdx < SCAN_UNKNOWN_START)
+    if (nIdx < SCAN_UNKNOWN_START)
       PPU_ScanTable[nIdx] = SCAN_ON_SCREEN;
     else if (nIdx < SCAN_VBLANK_START)
       PPU_ScanTable[nIdx] = SCAN_UNKNOWN;
@@ -370,26 +369,20 @@ void InfoNES_Fin()
 
   // Release a memory for ROM
   InfoNES_ReleaseRom();
-  printf("Released ROM memory.\n");
-  if (MapperExit)
-  {
-    printf("Calling Mapper Exit function\n");
-    MapperExit();
-    MapperExit = nullptr;
-  }
-#if 0
   Frens::f_free(RAM);
   Frens::f_free(SRAM);
   Frens::f_free(PPURAM);
   Frens::f_free(SPRRAM);
   Frens::f_free(ChrBuf);
-#else
-  free(RAM);
-  free(SRAM);
-  free(PPURAM);
-  free(SPRRAM);
-  free(ChrBuf);
+#if PICO_RP2350
+  if (Map5_Wram) { Frens::f_free(Map5_Wram); Map5_Wram = nullptr; }
+  if (Map5_Ex_Ram) { Frens::f_free(Map5_Ex_Ram); Map5_Ex_Ram = nullptr; }
+  if (Map5_Ex_Vram) { Frens::f_free(Map5_Ex_Vram); Map5_Ex_Vram = nullptr; }
+  if (Map5_Ex_Nam) { Frens::f_free(Map5_Ex_Nam); Map5_Ex_Nam = nullptr; }
+  Map5_Gfx_Mode = 0;
 #endif
+  if (Map85_Chr_Ram) { Frens::f_free(Map85_Chr_Ram); Map85_Chr_Ram = nullptr; }
+  if (DRAM) { Frens::f_free(DRAM); DRAM = nullptr; }
 }
 
 /*===================================================================*/
@@ -456,23 +449,38 @@ int InfoNES_Reset()
   /*-------------------------------------------------------------------*/
 
   // Get Mapper Number
-  MapperNo = NesHeader.byInfo1 >> 4;
+  // MapperNo = (NesHeader.byInfo1 >> 4) ;
 
-  // Check bit counts of Mapper No.
-  for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
-    ;
+  // // Check bit counts of Mapper No.
+  // for (nIdx = 4; nIdx < 8 && NesHeader.byReserve[nIdx] == 0; ++nIdx)
+  //   ;
 
-  if (nIdx == 8)
+  // if (nIdx == 8)
+  // {
+  //   // Mapper Number is 8bits
+  //   MapperNo |= (NesHeader.byInfo2 & 0xf0);
+  // }
+
+  if (IsFDS)
   {
-    // Mapper Number is 8bits
-    MapperNo |= (NesHeader.byInfo2 & 0xf0);
+    // Famicom Disk System: no iNES header, dispatch through synthetic mapper 20.
+    MapperNo = 20;
+    ROM_Mirroring = 0;
+    ROM_SRAM = 0;
+    ROM_Trainer = 0;
+    ROM_FourScr = 0;
   }
+  else
+  {
+    // Mapper Number is 8bits. Always use lower 4bits of byInfo2 for compatibility with old ROMs.
+    MapperNo = (NesHeader.byInfo1 >> 4) | (NesHeader.byInfo2 & 0xf0);
 
-  // Get information on the ROM
-  ROM_Mirroring = NesHeader.byInfo1 & 1;
-  ROM_SRAM = NesHeader.byInfo1 & 2;
-  ROM_Trainer = NesHeader.byInfo1 & 4;
-  ROM_FourScr = NesHeader.byInfo1 & 8;
+    // Get information on the ROM
+    ROM_Mirroring = NesHeader.byInfo1 & 1;
+    ROM_SRAM = NesHeader.byInfo1 & 2;
+    ROM_Trainer = NesHeader.byInfo1 & 4;
+    ROM_FourScr = NesHeader.byInfo1 & 8;
+  }
 
   /*-------------------------------------------------------------------*/
   /*  Initialize resources                                             */
@@ -538,19 +546,8 @@ int InfoNES_Reset()
     InfoNES_Error("Mapper #%d is unsupported.", MapperNo);
     return -1;
   }
-  #if PICO_RP2350
-  if (MapperTable[nIdx].nMapperNo == 85 && !Frens::isPsramEnabled()) {
-    InfoNES_Error("Mapper #85 requires PSRAM, which is not detected.");
-    return -1;
-  }
-  #else 
-  if (MapperTable[nIdx].nMapperNo == 85) {
-    InfoNES_Error("Mapper #85 is unsupported.");
-    return -1;
-  }
-  #endif
+
   // Set up a mapper initialization function
-  MapperExit = nullptr;
   MapperTable[nIdx].pMapperInit();
 
   /*-------------------------------------------------------------------*/
@@ -658,12 +655,66 @@ void InfoNES_Mirroring(int nType)
 /*              InfoNES_Main() : The main loop of InfoNES            */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_Main()
+namespace
+{
+  int s_region = INFONES_REGION_NTSC;
+}
+
+void InfoNES_SetRegion(int region)
+{
+  s_region = region;
+  switch (region)
+  {
+  case INFONES_REGION_PAL:
+    // PAL: 312 lines/frame at 50.007 Hz, CPU 1.662607 MHz.
+    STEP_PER_SCANLINE = 107;
+    STEP_PER_FRAME    = 33247;
+    SCAN_VBLANK_START = 241;
+    SCAN_VBLANK_END   = 311;
+    break;
+
+  case INFONES_REGION_DENDY:
+    // Dendy: PAL CPU clock + 312-line frame, but NTSC-style late vblank
+    // (vblank 291..311). Post-render extends from line 240 to 290.
+    STEP_PER_SCANLINE = 107;
+    STEP_PER_FRAME    = 33247;
+    SCAN_VBLANK_START = 291;
+    SCAN_VBLANK_END   = 311;
+    break;
+
+  case INFONES_REGION_NTSC:
+  default:
+    // NTSC: 262 lines/frame at 60.0988 Hz, CPU 1.789773 MHz.
+    s_region = INFONES_REGION_NTSC;
+    STEP_PER_SCANLINE = 114;
+    STEP_PER_FRAME    = 29780;
+    SCAN_VBLANK_START = 241;
+    SCAN_VBLANK_END   = 261;
+    break;
+  }
+}
+
+int InfoNES_GetRegion()
+{
+  return s_region;
+}
+
+bool InfoNES_IsPal()
+{
+  return s_region != INFONES_REGION_NTSC;
+}
+
+void InfoNES_Main(int region)
 {
   /*
    *  The main loop of InfoNES
    *
    */
+
+  // Region must be set before Init() so pAPU/PPU pick up region-dependent
+  // constants. Sets PPU timing now; APU rate tables and frame pacing are
+  // region-aware in later steps.
+  InfoNES_SetRegion(region);
 
   // Initialize InfoNES
   InfoNES_Init();
@@ -693,7 +744,7 @@ void InfoNES_Main()
 /*              InfoNES_Cycle() : The loop of emulation              */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_Cycle)()
+void __not_in_flash_func(InfoNES_Cycle)()
 {
   /*
    *  The loop of emulation
@@ -764,7 +815,7 @@ void (InfoNES_Cycle)()
 /*              InfoNES_HSync() : A function in H-Sync               */
 /*                                                                   */
 /*===================================================================*/
-int (InfoNES_HSync)()
+int __not_in_flash_func(InfoNES_HSync)()
 {
   /*
    *  A function in H-Sync
@@ -849,9 +900,10 @@ int (InfoNES_HSync)()
   /*-------------------------------------------------------------------*/
   /*  Operation in the specific scanning line                          */
   /*-------------------------------------------------------------------*/
-  switch (PPU_Scanline)
+  // Refactored from a switch into if/else because SCAN_VBLANK_START is now a
+  // runtime value (region-dependent: 241 for NTSC/PAL, 291 for Dendy).
+  if (PPU_Scanline == SCAN_TOP_OFF_SCREEN)
   {
-  case SCAN_TOP_OFF_SCREEN:
     // Reset a PPU status
     PPU_R2 = 0;
 
@@ -861,9 +913,9 @@ int (InfoNES_HSync)()
 
     // Get position of sprite #0
     InfoNES_GetSprHitY();
-    break;
-
-  case SCAN_UNKNOWN_START:
+  }
+  else if (PPU_Scanline == SCAN_UNKNOWN_START)
+  {
     if (FrameCnt == 0)
     {
       // Transfer the contents of work frame on the screen
@@ -875,21 +927,16 @@ int (InfoNES_HSync)()
         WorkFrame = DoubleFrame[ WorkFrameIdx ];
 #endif
     }
-    break;
-
-  case SCAN_VBLANK_START:
+  }
+  else if (PPU_Scanline == SCAN_VBLANK_START)
+  {
     // FrameCnt + 1
     FrameCnt = (FrameCnt >= FrameSkip) ? 0 : FrameCnt + 1;
 
     // Set a V-Blank flag
     PPU_R2 |= R2_IN_VBLANK;
-    // printf("vb : pc %04x, r2 %02x\n", PC, PPU_R2);
-
-    // Reset latch flag
-    // PPU_Latch_Flag = 0;
 
     // pAPU Sound function in V-Sync
-    // if (!APU_Mute)
     InfoNES_pAPUVsync();
 
     // A mapper function in V-Sync
@@ -901,15 +948,12 @@ int (InfoNES_HSync)()
     // NMI on V-Blank
     if (PPU_R0 & R0_NMI_VB)
     {
-      //      printf("nmi %04x %02x\n", PC, PPU_R0);
       NMI_REQ;
     }
 
     // Exit an emulation if a QUIT button is pushed
     if (PAD_PUSH(PAD_System, PAD_SYS_QUIT))
       return -1; // Exit an emulation
-
-    break;
   }
 
   // Successful
@@ -920,7 +964,7 @@ int (InfoNES_HSync)()
 
 namespace
 {
-  void (compositeSprite)(const uint16_t *pal,
+  void __not_in_flash_func(compositeSprite)(const uint16_t *pal,
                                             const uint8_t *spr,
                                             uint16_t *buf)
   {
@@ -957,7 +1001,7 @@ namespace
 /*              InfoNES_DrawLine() : Render a scanline               */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_DrawLine)()
+void __not_in_flash_func(InfoNES_DrawLine)()
 {
   /*
    *  Render a scanline
@@ -1053,11 +1097,24 @@ void (InfoNES_DrawLine)()
     {
       pPoint += 8 - PPU_Scr_H_Bit;
 
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if PICO_RP2350
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1098,12 +1155,27 @@ void (InfoNES_DrawLine)()
 
     auto putBG = [&](int nX) __attribute__((always_inline))
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
-      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const int ch = *pbyNameTable;
+#if PICO_RP2350
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int bank = (ch >> 6) + bankOfsBG;
       const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
       const auto data = PPUBANK[bank] + addrOfs;
+#endif
+      const auto palAddr = reinterpret_cast<uintptr_t>(pal);
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       // const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1146,6 +1218,7 @@ void (InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1181,6 +1254,7 @@ void (InfoNES_DrawLine)()
 #endif
 
       // Callback at PPU read/write
+      pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
       MapperPPU(PATTBL(pbyChrData));
 
       ++pbyNameTable;
@@ -1199,11 +1273,24 @@ void (InfoNES_DrawLine)()
     }
 #else
     {
-      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
       const int ch = *pbyNameTable;
-      const int bank = (ch >> 6) + bankOfsBG;
-      const int addrOfs = ((ch & 63) << 4) + yOfsModBG;
-      const auto data = PPUBANK[bank] + addrOfs;
+#if PICO_RP2350
+      const WORD *pal;
+      const BYTE *data;
+      if (Map5_Gfx_Mode == 1) {
+        const BYTE exram = Map5_Ex_Vram[nY * 32 + nX];
+        pal = &PalTable[((exram >> 6) & 3) << 2];
+        const int chrBank4K = ((int)Map5_Chr_Upper << 6) | (exram & 0x3F);
+        const int vromPage = (chrBank4K * 4 + (ch >> 6)) % (NesHeader.byVRomSize << 3);
+        data = VROMPAGE(vromPage) + ((ch & 63) << 4) + yOfsModBG;
+      } else {
+        pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+        data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+      }
+#else
+      const auto pal = &PalTable[(((pAttrBase[nX >> 2] >> ((nX & 2) + nY4)) & 3) << 2)];
+      const auto data = PPUBANK[(ch >> 6) + bankOfsBG] + ((ch & 63) << 4) + yOfsModBG;
+#endif
       const auto pl0 = data[0];
       const auto pl1 = data[8];
       const auto pat0 = (pl0 & 0x55) | ((pl1 << 1) & 0xaa);
@@ -1236,6 +1323,7 @@ void (InfoNES_DrawLine)()
 #endif
 
     // Callback at PPU read/write
+    pbyChrData = PPU_BG_Base + (*pbyNameTable << 6) + nYBit;
     MapperPPU(PATTBL(pbyChrData));
 
     /*-------------------------------------------------------------------*/
@@ -1536,7 +1624,7 @@ void (InfoNES_DrawLine)()
 /* InfoNES_GetSprHitY() : Get a position of scanline hits sprite #0  */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_GetSprHitY)()
+void __not_in_flash_func(InfoNES_GetSprHitY)()
 {
   /*
    * Get a position of scanline hits sprite #0
@@ -1663,7 +1751,7 @@ void (InfoNES_GetSprHitY)()
 /*            InfoNES_SetupChr() : Develop character data            */
 /*                                                                   */
 /*===================================================================*/
-void (InfoNES_SetupChr)()
+void __not_in_flash_func(InfoNES_SetupChr)()
 {
   /*
    *  Develop character data

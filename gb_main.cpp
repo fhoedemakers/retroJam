@@ -29,23 +29,26 @@
 // Order must match enum in menu_options.h
 const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     -1,                              // No save state support
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
+    (EXT_AUDIO_IS_ENABLED), // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    //(USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     1,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
-    0                                // Rapid Fire on B
-
+    0,                               // Rapid Fire on B
+    1,                               // Enter Bootsel Mode
+    0                                // FDS Disk Swap (not applicable for GameBoy)
 };
 
 const uint8_t g_available_screen_modes_gb[] = {
@@ -60,6 +63,7 @@ extern const unsigned char gb_overlay_555[];
 extern char *romName;
 static bool showSettings = false;
 static bool reset = false;
+static bool resetGame = false;
 static uint32_t start_tick_us = 0;
 static uint32_t fps = 0;
 static char fpsString[3] = "00";
@@ -199,6 +203,34 @@ static void inline processaudioPerFrameDVI()
         ring.advanceWritePointer(n);
         i += n;
     }
+}
+#else
+// Global HDMI audio frame counter shared across HSTX audio paths
+static int g_hdmi_audio_frame_counter = 0;
+static void inline processaudioPerFrameHSTX() {
+    static audio_sample_t acc_buf[4];
+    static int acc_count = 0;
+    // For HSTX with PicoHDMI, we can use the same improved I2S path as non-HSTX, since PicoHDMI also uses I2S for audio output.
+     uint32_t *sample_buffer = (uint32_t *)audio_stream;
+    constexpr int kSamplesPerFrame = 738; // stereo frames (left/right packed)
+    int i = 0;
+    while (i < kSamplesPerFrame)
+    {
+
+        uint32_t packed = sample_buffer[i];
+        int16_t l = static_cast<int16_t>(packed >> 16);
+        int16_t r = static_cast<int16_t>(packed & 0xFFFF);
+#if ENABLE_VU_METER
+        if (settings.flags.enableVUMeter)
+        {
+            addSampleToVUMeter(l);
+        } 
+#endif
+       l = l >> 2;
+         r = r >> 2;
+       hstx_push_audio_sample(l, r);
+       i++;
+    } 
 }
 #endif
 
@@ -359,22 +391,17 @@ static void inline processaudioPerFrameI2S()
 }
 void inline output_audio_per_frame()
 {
-
-#if !HSTX
 #if EXT_AUDIO_IS_ENABLED
-    if (settings.flags.useExtAudio == 1)
+    if (settings.flags.useExtAudio == 1 || Frens::isHeadPhoneJackConnected())
     {
         processaudioPerFrameI2S();
+        return;
     }
-    else
-    {
-        processaudioPerFrameDVI();
-    }
-#else
-    processaudioPerFrameDVI();
 #endif
+#if !HSTX
+    processaudioPerFrameDVI();
 #else
-    processaudioPerFrameI2S();
+    processaudioPerFrameHSTX();
 #endif
 }
 static DWORD prevButtons[2]{};
@@ -612,6 +639,9 @@ static int ProcessAfterFrameIsRendered(bool frommenu)
         {
             reset = true;
         }
+         if (rval == 5) {
+           reset = resetGame = true;
+        }
         loadoverlay();                                                              // reload overlay to show any changes
         emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette); // in case palette was changed, GameBoy Specific
     }
@@ -736,6 +766,8 @@ static void __not_in_flash_func(process)()
     while (reset == false)
     {
         Frens::PaceFrames60fps(false);
+        //Frens::waitForVSync();
+        Frens::pollHeadPhoneJack();
         processinput(false, &pdwPad1, &pdwPad2, &pdwSystem, false, nullptr);
         ti1 = Frens::time_us();
         emu_run_frame();
@@ -779,19 +811,21 @@ int gb_main()
     }
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
-
-    reset = false;
-    printf("Initializing Game Boy Emulator\n");
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
-    EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
-    loadoverlay(); // load default overlay
-    emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
-    uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);
-    if (startemulation(rom, romName, GAMESAVEDIR, ErrorMessage, HSTX))
-    {
-        process();
-        stopemulation(romName, GAMESAVEDIR);
-    }
-
+    do {
+        reset = false;
+        resetGame = false;
+        printf("Initializing Game Boy Emulator\n");
+        //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+        EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
+        loadoverlay(); // load default overlay
+        emu_set_dmg_palette_type((dmg_palette_type_t)settings.flags.dmgLCDPalette);
+        uint8_t *rom = reinterpret_cast<unsigned char *>(ROM_FILE_ADDR);
+        if (startemulation(rom, romName, GAMESAVEDIR, ErrorMessage, HSTX))
+        {
+            Frens::PaceFrames60fps(true);
+            process();
+            stopemulation(romName, GAMESAVEDIR);
+        }
+    } while (resetGame);
     return 0;
 }

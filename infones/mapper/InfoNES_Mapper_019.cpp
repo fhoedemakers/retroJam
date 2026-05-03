@@ -4,7 +4,7 @@
 /*                                                                   */
 /*===================================================================*/
 
-BYTE *Map19_Chr_Ram; // [0x2000];
+BYTE Map19_Chr_Ram[0x2000];
 BYTE Map19_Regs[2];
 
 BYTE Map19_IRQ_Enable;
@@ -18,10 +18,6 @@ DWORD Map19_IRQ_Cnt;
 /*-------------------------------------------------------------------*/
 void Map19_Init()
 {
-  printf("Initializing Mapper 19\n");
-  Map19_Chr_Ram = (BYTE *) Frens::f_malloc(0x2000);
-
-  MapperExit = Map19_Exit;
   /* Initialize Mapper */
   MapperInit = Map19_Init;
 
@@ -79,16 +75,6 @@ void Map19_Init()
 
   /* Set up wiring of the interrupt pin */
   K6502_Set_Int_Wiring(1, 1);
-}
-
-void Map19_Exit()
-{
-    if (Map19_Chr_Ram)
-    {
-        printf("Freeing Mapper19 CHR RAM\n");
-        Frens::f_free(Map19_Chr_Ram);
-        Map19_Chr_Ram = nullptr;
-    }
 }
 
 /*-------------------------------------------------------------------*/

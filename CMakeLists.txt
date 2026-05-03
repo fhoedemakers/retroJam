@@ -81,7 +81,12 @@ add_executable(${projectname}
     sms_state.cpp
     md_main.cpp
 )
-
+if (PICO_PLATFORM STREQUAL "rp2350-arm-s" OR PICO_PLATFORM STREQUAL "rp2350-riscv")
+    set(INFONES_MAPPER_5_ENABLED "1" CACHE STRING "Enable NES Mapper 5")
+else()
+    set(INFONES_MAPPER_5_ENABLED "0" CACHE STRING "Enable NES Mapper 5")
+endif()
+message("Mapper 5 enabled      : ${INFONES_MAPPER_5_ENABLED}")
 pico_set_program_name(${projectname} "${projectname}")
 
 pico_set_program_version(${projectname} "0.1")
@@ -118,6 +123,7 @@ target_compile_definitions(${projectname} PRIVATE
     WII_PIN_SDA=${WII_SDA}
     WII_PIN_SCL=${WII_SCL}
     LED_GPIO_PIN=${LED_GPIO_PIN}
+     NES_MAPPER_5_ENABLED=${INFONES_MAPPER_5_ENABLED}
     HW_CONFIG=${HW_CONFIG}
     WIIPAD_I2C=${WIIPAD_I2C}
     USE_I2S_AUDIO=${USE_I2S_AUDIO}
@@ -144,6 +150,7 @@ target_compile_definitions(${projectname} PRIVATE
     LSB_FIRST=1                     # SMS emulator LSB first input
     MB_SMS=1                        # SMS emulator Megabios support (Needed?)
     RETROJAM=1                       # retroJam specific code adjustments
+    #HSTX_DEBUG=1
 
 )
 

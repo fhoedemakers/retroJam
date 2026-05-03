@@ -20,20 +20,23 @@ inline bool hasNVRAM(const uint8_t *data)
 class nes_ROMSelector
 {
     const uint8_t *singleROM_{};
+    bool isFds_{};
    // std::vector<TAREntry> entries_;
 
     // int selectedIndex_ = 0;
 
 public:
-    void init(uintptr_t addr)
+    bool init(uintptr_t addr)
     {
         auto *p = reinterpret_cast<const uint8_t *>(addr);
         if (checkNESMagic(p))
         {
             singleROM_ = p;
+            isFds_ = false;
             printf("Single ROM.\n");
-            return;
+            return true;
         }
+        return false;
 
         // entries_ = parseTAR(p, checkNESMagic);
         // printf("%zd ROMs.\n", entries_.size());
@@ -41,6 +44,14 @@ public:
         // {
         //     printf("  %s: %p, %zd\n", e.filename.data(), e.data, e.size);
         // }
+    }
+
+    // Register a non-iNES image (FDS disk) without magic checks.
+    void initRaw(uintptr_t addr)
+    {
+        singleROM_ = reinterpret_cast<const uint8_t *>(addr);
+        isFds_ = true;
+        printf("Single FDS image.\n");
     }
 
     const uint8_t *getCurrentROM() const
@@ -61,6 +72,11 @@ public:
         auto currentROM = getCurrentROM();
         if (!currentROM)
         {
+            return -1;
+        }
+        if (isFds_)
+        {
+            // FDS uses sidecar save file, not iNES SRAM slot.
             return -1;
         }
         if (!hasNVRAM(currentROM))

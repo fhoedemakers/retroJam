@@ -34,22 +34,25 @@ static uint32_t CPUFreqKHz = EMULATOR_CLOCKFREQ_KHZ;
 // Order must match enum in menu_settings.h
 const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
+    (EXT_AUDIO_IS_ENABLED),          // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (for GameBoy emulators)
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
-    0                                // Rapid Fire on B
+    0,                               // Rapid Fire on B
+    1,                                // Enter Bootsel Mode
+    0,                               // FDS Disk Swap (only for FDS games on NES emulator)
 };
 
 const uint8_t g_available_screen_modes_main[] = {
@@ -127,7 +130,7 @@ int main()
     Frens::setClocksAndStartStdio(CPUFreqKHz, voltage);
     printf("Checking flash params at 0x%08X\n", (uintptr_t)flashParams);
     printf("==========================================================================================\n");
-    printf("Picomulator %s\n", SWVERSION);
+    printf("retroJam %s\n", SWVERSION);
     printf("Build date: %s\n", __DATE__);
     printf("Build time: %s\n", __TIME__);
     printf("CPU freq: %d kHz\n", clock_get_hz(clk_sys) / 1000);
@@ -176,7 +179,7 @@ int main()
         // .gg = Game Gear ROMs
         // .gb = GameBoy ROMs
         // .gbc = GameBoy Color ROMs
-        menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .md .gen .bin .sms .gg .gb .gbc", selectedRom);
+        menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .fds .md .gen .bin .sms .gg .gb .gbc", selectedRom);
         printf("Selected ROM from menu: %s\n", selectedRom);
         printf("ROM selected: %s\n", selectedRom);
         printf("Launching  %s emulator\n", FrensSettings::getEmulatorTypeString());

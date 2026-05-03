@@ -8,6 +8,8 @@
 #include "InfoNES.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
+#include "InfoNES_Region.h"
+#include "InfoNES_FDS.h"
 #include "ff.h"
 #include "tusb.h"
 #include "gamepad.h"
@@ -45,28 +47,45 @@ static int g_dvi_audio_gain_q8 = DVI_AUDIO_GAIN_Q8;
 #endif
 static int g_record_gain_q8 = RECORD_GAIN_Q8;
 
+#if PICO_RP2350
+static const MenuFdsHooks fdsMenuHooks = {
+    fdsCurrentSwapValue,
+    fdsGetNumSides,
+    fdsRequestSwap,
+    fdsRequestEject
+};
+#endif
+
 // Visibility configuration for options menu (NES specific)
 // 1 = show option line, 0 = hide.
 // Order must match enum in menu_options.h
-const int8_t g_settings_visibility_nes[MOPT_COUNT] = {
+//
+// Non-const so the FDS disk-swap entry can be flipped on per-ROM after
+// fdsParse() detects we're loading a .fds. The pointer in
+// `g_settings_visibility` is `const int8_t *`, but it can point at
+// non-const storage just fine.
+int8_t g_settings_visibility_nes[MOPT_COUNT] = {
     0,                               // Exit Game, or back to menu. Always visible when in-game.
+    0,                               // Reset Game. Always visible when in-game.
     0,                               // Save / Restore State
     !HSTX,                           // Screen Mode (only when not HSTX)
     HSTX,                            // Scanlines toggle (only when HSTX)
     1,                               // FPS Overlay
     0,                               // Audio Enable
     0,                               // Frame Skip
-    (EXT_AUDIO_IS_ENABLED && !HSTX), // External Audio
+    (ENABLEDVI),                     // Display Mode (only when DVI is enabled)
+    (EXT_AUDIO_IS_ENABLED),          // External Audio
     1,                               // Font Color
     1,                               // Font Back Color
     ENABLE_VU_METER,                 // VU Meter
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
-    (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Volume Control
+    // (USE_I2S_AUDIO == PICO_AUDIO_I2S_DRIVER_TLV320),                // Fruit Jam Internal Speaker
+    (HW_CONFIG == 8),                // Fruit Jam Volume Control
     0,                               // DMG Palette (NES emulator does not use GameBoy palettes)
     0,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     1,                               // Rapid Fire on A
-    1                                // Rapid Fire on B
-
+    1,                               // Rapid Fire on B
+    1,                               // Enter Bootsel Mode
+    0                                // FDS Disk Swap (toggled on after fdsParse succeeds)
 };
 
 const uint8_t g_available_screen_modes_nes[] = {
@@ -162,6 +181,19 @@ void saveNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar persistence is disabled until the Mesen2-style
+           expanded-image refactor lands — without it, our writes
+           corrupt the raw .fds layout, so we must not save those
+           bytes back to /SAVES or they'll wreck the next session.
+           Keep the function body so the dispatch wiring stays
+           intact for when the refactor lands. */
+        (void)pad;
+        return;
+    }
+#endif
     if (!SRAMwritten)
     {
         printf("SRAM not updated.\n");
@@ -198,6 +230,17 @@ bool loadNVRAM()
     char fileName[FF_MAX_LFN];
     strcpy(fileName, Frens::GetfileNameFromFullPath(romName));
     Frens::stripextensionfromfilename(fileName);
+
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        /* Sidecar load disabled — see saveNVRAM for rationale. With a
+           pristine disk image, FDS games run their stock state on every
+           launch (no save persistence yet, but no corruption either). */
+        (void)pad;
+        return true;
+    }
+#endif
 
     snprintf(pad, FF_MAX_LFN, "%s/%s.SAV", GAMESAVEDIR, fileName);
 
@@ -261,6 +304,7 @@ static DWORD prevButtons[2]{};
 static int rapidFireMask[2]{};
 static int rapidFireCounter = 0;
 static bool reset = false;
+static bool resetGame = false;
 void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
 {
     static constexpr int LEFT = 1 << 6;
@@ -459,7 +503,7 @@ void InfoNES_PadState(DWORD *pdwPad1, DWORD *pdwPad2, DWORD *pdwSystem)
     {
         saveNVRAM();
     }
-    *pdwSystem = reset ? PAD_SYS_QUIT : 0;
+    *pdwSystem = ( reset || resetGame ) ? PAD_SYS_QUIT : 0;
 }
 
 void InfoNES_MessageBox(const char *pszMsg, ...)
@@ -484,6 +528,35 @@ void InfoNES_Error(const char *pszMsg, ...)
 }
 bool parseROM(const uint8_t *nesFile)
 {
+#if PICO_RP2350
+    // Famicom Disk System dispatch. The disk image was loaded into PSRAM
+    // via flashromtoPsram (same path as .nes); look up its size from the
+    // file on SD so we can determine side count and strip any fwNES header.
+    if (fdsIsFdsFilename(romName))
+    {
+        FILINFO fno;
+        if (f_stat(romName, &fno) != FR_OK)
+        {
+            snprintf(ErrorMessage, ERRORMESSAGESIZE, "Cannot stat FDS file %s", romName);
+            printf("%s\n", ErrorMessage);
+            return false;
+        }
+        if (!fdsParse((BYTE *)nesFile, (size_t)fno.fsize))
+        {
+            // fdsParse already populated ErrorMessage via InfoNES_Error.
+            return false;
+        }
+        // Disk image lives in PSRAM at nesFile; PRG/CHR-RAM live in dedicated
+        // FDS_* buffers. ROM/VROM are wired up by Mapper 20 init (phase 3).
+        ROM = nullptr;
+        VROM = nullptr;
+        // Phase 5: expose disk-swap option in the in-game settings menu.
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 1;
+        menuSetFdsHooks(&fdsMenuHooks);
+        return true;
+    }
+#endif
+
     memcpy(&NesHeader, nesFile, sizeof(NesHeader));
     if (!checkNESMagic(NesHeader.byID))
     {
@@ -501,12 +574,38 @@ bool parseROM(const uint8_t *nesFile)
     }
 
     auto romSize = NesHeader.byRomSize * 0x4000;
+    auto vromSize = NesHeader.byVRomSize * 0x2000;
+
+    // Detect ROMs where the header overstates PRG size and CHR data is
+    // embedded inside the declared PRG area (e.g. Galaxian (J) has 8KB PRG +
+    // 8KB CHR packed as 16KB with a header claiming 16KB PRG + 8KB CHR).
+    // The reset vector at the end of the declared PRG will be invalid while
+    // the vector at (romSize - vromSize) is valid.
+    if (romSize > 0 && vromSize > 0 && romSize > vromSize)
+    {
+        uint16_t resetVec = nesFile[romSize - 4] | ((uint16_t)nesFile[romSize - 3] << 8);
+        if (resetVec < 0x8000)
+        {
+            auto actualPrgSize = romSize - vromSize;
+            uint16_t fixedResetVec = nesFile[actualPrgSize - 4] |
+                                     ((uint16_t)nesFile[actualPrgSize - 3] << 8);
+            if (fixedResetVec >= 0x8000)
+            {
+                printf("ROM header fix: PRG %dK -> %dK, CHR found at PRG offset %d\n",
+                       romSize / 1024, actualPrgSize / 1024, actualPrgSize);
+                ROM = (BYTE *)nesFile;
+                VROM = (BYTE *)(nesFile + actualPrgSize);
+                NesHeader.byRomSize = actualPrgSize / 0x4000;
+                return true;
+            }
+        }
+    }
+
     ROM = (BYTE *)nesFile;
     nesFile += romSize;
 
     if (NesHeader.byVRomSize > 0)
     {
-        auto vromSize = NesHeader.byVRomSize * 0x2000;
         VROM = (BYTE *)nesFile;
         nesFile += vromSize;
     }
@@ -518,6 +617,15 @@ void InfoNES_ReleaseRom()
 {
     ROM = nullptr;
     VROM = nullptr;
+#if PICO_RP2350
+    if (IsFDS)
+    {
+        fdsRelease();
+        IsFDS = false;
+        g_settings_visibility_nes[MOPT_FDS_DISK_SWAP] = 0;
+        menuSetFdsHooks(nullptr);
+    }
+#endif
 }
 
 void InfoNES_SoundInit()
@@ -535,19 +643,26 @@ void InfoNES_SoundClose()
 
 int __not_in_flash_func(InfoNES_GetSoundBufferSize)()
 {
-#if !HSTX
+    // Prefer early return to avoid duplicated branches.
 #if EXT_AUDIO_IS_ENABLED
-    if (!settings.flags.useExtAudio)
+    if (settings.flags.useExtAudio)
     {
-        return dvi_->getAudioRingBuffer().getFullWritableSize();
+        // External audio path accepts small chunks; keep it minimal.
+        return 4;
     }
-    return 4;
-#else
-    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
+
+#if HSTX
+    // Compute free HDMI Data Island audio packet capacity and convert to samples.
+    int level = hstx_di_queue_get_level();
+    int free_packets = HSTX_AUDIO_DI_HIGH_WATERMARK - level;
+    if (free_packets <= 0)
+        return 0;
+    // Each DI packet carries 4 audio samples; use shift for fast multiply.
+    return free_packets << 2;
 #else
-    // return mcp4822_get_free_buffer_space();
-    return 4;
+    // Non-HSTX path: return available ring buffer capacity directly.
+    return dvi_->getAudioRingBuffer().getFullWritableSize();
 #endif
 }
 
@@ -593,7 +708,7 @@ static inline void recordSampleToSoundRecorder(int l, int r)
 }
 
 
-void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5)
+void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wave2, BYTE *wave3, BYTE *wave4, BYTE *wave5, BYTE *wave6)
 {
 #if !HSTX
     while (samples)
@@ -616,10 +731,12 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
             int w3 = *wave3++;
             int w4 = *wave4++;
             int w5 = *wave5++;
+            /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+            int w6 = wave6 ? *wave6++ : 0;
             // w1 = w2 = w4 = w5 = 0; // only enable triangle channel
             // w3 = 0; // Disable triangle channel
-            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
+            int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+            int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
 #if PICO_RP2350
         recordSampleToSoundRecorder(l, r);
 #endif
@@ -649,16 +766,6 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
                 addSampleToVUMeter(l);
             }
 #endif
-            // pulse_out = 0.00752 * (pulse1 + pulse2)
-            // tnd_out = 0.00851 * triangle + 0.00494 * noise + 0.00335 * dmc
-
-            // 0.00851/0.00752 = 1.131648936170213
-            // 0.00494/0.00752 = 0.6569148936170213
-            // 0.00335/0.00752 = 0.4454787234042554
-
-            // 0.00752/0.00851 = 0.8836662749706228
-            // 0.00494/0.00851 = 0.5804935370152762
-            // 0.00335/0.00851 = 0.3936545240893067
         }
 
 #if EXT_AUDIO_IS_ENABLED
@@ -671,24 +778,10 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
 #endif
         samples -= n;
     }
-    // #else
-    //     int ct = samples;
-    //     while (ct--)
-    //     {
-    //         int w1 = *wave1++;
-    //         int w2 = *wave2++;
-    //         int w3 = *wave3++;
-    //         int w4 = *wave4++;
-    //         int w5 = *wave5++;
-
-    //         int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-    //         int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-
-    //         uint32_t sample32 = (l << 16) | (r & 0xFFFF);
-    //         audio_i2s_enqueue_sample(sample32);
-    //     }
-    // #endif
 #else
+#if EXT_AUDIO_IS_ENABLED
+    bool audioJackConnected = Frens::isHeadPhoneJackConnected();
+#endif
     for (int i = 0; i < samples; ++i)
     {
         int w1 = wave1[i];
@@ -696,46 +789,85 @@ void __not_in_flash_func(InfoNES_SoundOutput)(int samples, BYTE *wave1, BYTE *wa
         int w3 = wave3[i];
         int w4 = wave4[i];
         int w5 = wave5[i];
+        /* w6: expansion audio (Sunsoft 5B) — null when no expansion cart is loaded. */
+        int w6 = wave6 ? wave6[i] : 0;
 
         // Mix your channels to a 12-bit value (example mix, adjust as needed)
         // This works but some effects are silent:
         // int sample12 =  (w1 + w2 + w3 + w4 + w5); // Range depends on input
         // Below is a more complex mix that gives a better sound
-#if 0
-        int sample12 = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32; //
 
-        // Clamp to 0-4095 if needed
-        if (sample12 < 0)
-            sample12 = 0;
-        if (sample12 > 4095)
-            sample12 = 4095;
+        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32 + w6 * 18;
+        const int l0 = l;
+        const int r0 = r;
 
-        // // Convert to 8-bit unsigned
-        // uint8_t sample8 = (sample12 * 255) / 4095;
-        mcp4822_push_sample(sample12);
-#else
-        int l = w1 * 6 + w2 * 3 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        int r = w1 * 3 + w2 * 6 + w3 * 5 + w4 * 3 * 17 + w5 * 2 * 32;
-        // l = apply_gain_i32(l);
-        // r = apply_gain_i32(r);
-        EXT_AUDIO_ENQUEUE_SAMPLE(l, r);
-
-#if PICO_RP2350
-        recordSampleToSoundRecorder(l, r);
-#endif
-#if ENABLE_VU_METER
+    #if PICO_RP2350
+        recordSampleToSoundRecorder(l0, r0);
+    #endif
+    #if ENABLE_VU_METER
         if (settings.flags.enableVUMeter)
         {
-            addSampleToVUMeter(l);
+            addSampleToVUMeter(l0);
         }
-#endif
-#endif
+    #endif
+
+    #if EXT_AUDIO_IS_ENABLED
+        if (settings.flags.useExtAudio || audioJackConnected)
+        {
+            EXT_AUDIO_ENQUEUE_SAMPLE(l0, r0);
+            continue;
+        }
+    #endif
+        
+        int gl = apply_dvi_gain_i32(l0);
+        int gr = apply_dvi_gain_i32(r0);
+        hstx_push_audio_sample(gl, gr);
+        
         // outBuffer[outIndex++] = sample8;
     }
 #endif
 }
 
 extern WORD PC;
+
+// Region-aware frame pacing.
+//   NTSC: forwards to Frens::PaceFrames60fps (preserves the existing HSTX
+//         vsync-wait and non-HSTX vsync/line-buffer behavior verbatim).
+//   PAL : 50 Hz pacing via sleep_until. The HDMI/DVI panel still scans at
+//         60 Hz, so 1 in every 6 displayed frames will be a duplicate; the
+//         emulator itself runs at correct PAL speed. Works on HSTX (replaces
+//         hstx_paceFrame's 60 Hz vsync wait) and on non-HSTX framebuffer
+//         mode (replaces the vsync busy-wait). PAL is rejected upstream
+//         when no framebuffer is available — see fallback at the call site.
+static void paceFrame(bool init)
+{
+    if (!InfoNES_IsPal())
+    {
+        Frens::PaceFrames60fps(init);
+        return;
+    }
+
+    static absolute_time_t next_frame_time;
+    static bool initialized = false;
+    if (init || !initialized)
+    {
+        next_frame_time = make_timeout_time_us(0);
+        initialized = true;
+    }
+
+    // Slack-aware: if we overran the target by more than one frame (e.g.
+    // returning from the menu after an idle pause), snap forward instead of
+    // bursting through the backlog. Mirrors hstx_paceFrame's resync logic.
+    absolute_time_t now = get_absolute_time();
+    if (absolute_time_diff_us(now, next_frame_time) <= -20000)
+    {
+        next_frame_time = now;
+    }
+
+    sleep_until(next_frame_time);
+    next_frame_time = delayed_by_us(next_frame_time, 20000); // 1/50s = 20000us
+}
 
 int InfoNES_LoadFrame()
 {
@@ -753,7 +885,9 @@ int InfoNES_LoadFrame()
 //             printf("State load failed.\n");
 //         }
 //     }
-    Frens::PaceFrames60fps(false);
+    paceFrame(false);
+    //Frens::waitForVSync();
+    Frens::pollHeadPhoneJack();
 #if NES_PIN_CLK != -1
     nespad_read_start();
 #endif
@@ -812,6 +946,9 @@ int InfoNES_LoadFrame()
             loadSaveStateMenu = true;
             quickSaveAction = SaveStateTypes::NONE;
            
+        }
+        if (rval == 5) {
+           resetGame = true;
         }
     }
     if (loadSaveStateMenu) {
@@ -1035,8 +1172,8 @@ int nes_main()
     scaleMode8_7_ = Frens::applyScreenMode(settings.screenMode);
 #endif
 
-    reset = loadSaveStateMenu = false;
-    EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
+    reset = resetGame = loadSaveStateMenu = false;
+    //EXT_AUDIO_MUTE_INTERNAL_SPEAKER(settings.flags.fruitJamEnableInternalSpeaker == 0);
     EXT_AUDIO_SETVOLUME(settings.fruitjamVolumeLevel);
     *ErrorMessage = 0;
     if (isAutoSaveStateConfigured())
@@ -1061,7 +1198,41 @@ int nes_main()
     {
         printf("No auto-save configured for this ROM.\n");
     }
-    romSelector_.init(ROM_FILE_ADDR);
-    InfoNES_Main();
+     do {
+        resetGame = false;
+#if PICO_RP2350
+        if (fdsIsFdsFilename(romName))
+        {
+            romSelector_.initRaw(ROM_FILE_ADDR);
+        }
+        else
+#endif
+        if (!romSelector_.init(ROM_FILE_ADDR)) {
+            strcpy(ErrorMessage, "Not a NES ROM file.");
+            break;
+        }
+
+        // isRomPal: 0 = NTSC, 1 = PAL, 2 = Dendy.
+        int region = InfoNES_DetectRegion(ROM_FILE_ADDR, Frens::getCrcOfLoadedRom(), romName);
+        static const char *regionNames[] = { "NTSC", "PAL", "Dendy" };
+        const char *regionName = regionNames[region & 3];
+
+        // PAL/Dendy require a framebuffer-based video pipeline. In non-HSTX
+        // line-streaming mode (RP2040, no framebuffer) the line-buffer
+        // queue is hardware-locked to the DVI 60 Hz scanline rate, so
+        // pacing the emulator at 50 Hz starves the queue (flicker) and
+        // the audio ring buffer (silence). Force NTSC there.
+#if !HSTX
+        if (region != INFONES_REGION_NTSC && !Frens::isFrameBufferUsed())
+        {
+            printf("%s not supported in line-streaming mode (no framebuffer); running as NTSC.\n", regionName);
+            region = INFONES_REGION_NTSC;
+            regionName = regionNames[0];
+        }
+#endif
+        printf("Region: %s\n", regionName);
+        paceFrame(true); // reset pacing to avoid burst of frames if resetGame is true
+        InfoNES_Main(region);
+     } while (resetGame);
     return 0;
 }
