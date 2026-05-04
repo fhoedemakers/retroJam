@@ -51,7 +51,8 @@ const int8_t g_settings_visibility_main[MOPT_COUNT] = {
     0,                               // Border Mode (for Super GameBoy)
     0,                               // Rapid Fire on A
     0,                               // Rapid Fire on B
-    1,                                // Enter Bootsel Mode
+    1,                               // Auto Swap FDS
+    1,                               // Enter Bootsel Mode
     0,                               // FDS Disk Swap (only for FDS games on NES emulator)
 };
 
@@ -179,7 +180,7 @@ int main()
         // .gg = Game Gear ROMs
         // .gb = GameBoy ROMs
         // .gbc = GameBoy Color ROMs
-        menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .fds .md .gen .bin .sms .gg .gb .gbc", selectedRom);
+        menu("retroJam", ErrorMessage, isFatalError, showSplash, ".nes .fds .nsf .md .gen .bin .sms .gg .gb .gbc", selectedRom);
         printf("Selected ROM from menu: %s\n", selectedRom);
         printf("ROM selected: %s\n", selectedRom);
         printf("Launching  %s emulator\n", FrensSettings::getEmulatorTypeString());

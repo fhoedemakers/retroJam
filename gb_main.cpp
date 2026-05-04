@@ -47,6 +47,7 @@ const int8_t g_settings_visibility_gb[MOPT_COUNT] = {
     1,                               // Border Mode (Super Gameboy style borders not applicable for NES)
     0,                               // Rapid Fire on A
     0,                               // Rapid Fire on B
+    1,                               // Auto Swap FDS Disk
     1,                               // Enter Bootsel Mode
     0                                // FDS Disk Swap (not applicable for GameBoy)
 };
