@@ -111,6 +111,10 @@ When prompted to swap disks, use the in-game settings menu:
 3. Press **LEFT/RIGHT** to choose the disk side.
 4. Press **Button2** to confirm and return.
 
+### Auto Swapping disks
+
+In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
+
 ## Playing NSF audio files
 
 The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
@@ -125,10 +129,6 @@ Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will 
 - Select + Start: Back to the menu.
 
 <img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
-
-### Auto Swapping disks
-
-In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
 
 ## Using Metadata
 
