@@ -1,6 +1,44 @@
 # CHANGELOG
 
-A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav music files.
+A multi retro console emulator for Adafruit Fruit Jam, capable of emulating a few classic 8-bit systems and even the 16-bit Sega Genesis. Support for additional boards may follow. Some emulators have savestate support. It also can play .wav and .nsf music files.
+
+# v0.6 Release notes
+
+## NES emulation
+
+**Famicom Disk System**
+
+Note that FDS support requires an RP2350 board with PSRAM and a BIOS file at `/bios/fds-bios.rom`.
+
+- Implement save games for games that support write save data back to disk, like Metroid and Zelda. Saves are stored as `/SAVES/gametitle_fds.sav` [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193)
+- Added an option to the settings menu to automatically swap disk sides. This setting is disabled by default. When it’s off, you can manually swap disks in-game using SELECT + START.
+
+Audio is not perfect but acceptable.
+
+**NSF sound playback**
+
+- Added NSF playback. Emulator can load and play `.nsf` (Nintendo Sound Format) roms.
+- Controls:
+	- LEFT/RIGHT change track
+	- Button2 Stop
+	- Button1 Resume
+
+**Settings menu**
+
+- Better use of screen real estate:
+	- SAVE / DEFAULT / CANCEL are on the same row.
+	- FG/BG color codes now placed to the left to the color grid.
+
+## Fixes
+
+**Famicom Disk System**
+
+- Fix disk error 24 in Metroid and possible in other games too. [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192)
+- Fix for game lock-up in Zelda when moving to the next screen during gameplay.
+
+## Use of AI
+
+FDS, NSF, additional mappers developed with the help of [Anthropic Claude Opus 4.6](https://www.anthropic.com/claude/opus)
 
 # v0.5 Release notes
 
