@@ -19,7 +19,10 @@ Click on image below to see a demo video.
 
 Use a FAT32 formatted sd-card and put your roms on it. You can use folders to origanize them.
 This emulator framework supports the following file extensions:
-- `.nes` - Nintendo Entertainment System. With save state support. Also plays Famicom Disk System games (`.fds`). See [#famicom-disk-system-fds-games](#famicom-disk-system-fds-games) for limitations regarding FDS games.
+- Nintendo Entertainment System:
+  - `.nes` Nintendo Entertainment System. With save state support. 
+  - `.fds` Famicom Disk System games. See [#famicom-disk-system-fds-games](#famicom-disk-system-fds-games)
+  - `.nsf` Nintendo Sound Format. With controls to change track, stop and resume playback. See [#playing-nsf-audio-files](#playing-nsf-audio-files)
 - `.gg` - Sega Game Gear - With save state support.
 - `.sms` - Sega Master System - With save state support.
 - `.gb` - Nintendo GameBoy
@@ -86,17 +89,19 @@ NES Save States should work for  mapper 0,1,2,3 and 4. Other mappers may or may 
 
   The mapper number is also shown in the Save State screen.
 
-# Famicom Disk System (FDS) Games
+## Famicom Disk System (FDS) Games
 
-FDS games are supported with the following limitations:
+FDS games are supported with the following requirements:
 
 - A BIOS file is required. Place it at `/bios/fds-bios.rom` on the SD card.
 - An RP2350 board with PSRAM is required.
-- Games that save data to disk may not work correctly or at all. (Zelda, Metroid)
-- Expansion audio is not supported.
+- You need roms with the `.fds` extension.
 
-See [#192](https://github.com/fhoedemakers/pico-infonesPlus/issues/192), [#193](https://github.com/fhoedemakers/pico-infonesPlus/issues/193), [#194](https://github.com/fhoedemakers/pico-infonesPlus/issues/194), [#195](https://github.com/fhoedemakers/pico-infonesPlus/issues/195) for issues regarding to FDS.
+FDS games have these features:
 
+- For games that support write save data back to disk, you must go back to the menu to save the game. Saves are written to `/saves/gamename_fds.sav`. Save states are not supported for FDS games.
+- Audio is not perfect but acceptable. 
+  
 ### Swapping Disks
 
 When prompted to swap disks, use the in-game settings menu:
@@ -105,6 +110,25 @@ When prompted to swap disks, use the in-game settings menu:
 2. Select the first option to change the disk.
 3. Press **LEFT/RIGHT** to choose the disk side.
 4. Press **Button2** to confirm and return.
+
+### Auto Swapping disks
+
+In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabled by default. When enabled, the emulator will automatically swap disks when needed. Note that in some cases you still need to manually swap the disks.
+
+## Playing NSF audio files
+
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
+
+Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
+
+**Controls**
+
+- Right/Left: Next/Previous track.
+- Button1: Stop Playback
+- Button2: Resume playback.
+- Select + Start: Back to the menu.
+
+<img width="1920" height="1080" alt="Screenshot 2026-05-04 10-12-59" src="https://github.com/user-attachments/assets/6e6a954e-e58f-48c3-9989-ea5482f3e992" />
 
 ## Using Metadata
 

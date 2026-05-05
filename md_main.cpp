@@ -113,6 +113,7 @@ const int8_t g_settings_visibility_md[MOPT_COUNT] = {
     0,                               // Border Mode (Super Gameboy style borders not applicable for Genesis)
     0,                               // Rapid Fire on A (not applicable)
     0,                               // Rapid Fire on B (not applicable)
+    1,                               // Auto Swap FDS Disk
     1,                               // Enter Bootsel Mode
     0                                // FDS Disk Swap (not applicable for Genesis)
 };
