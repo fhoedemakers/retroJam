@@ -117,7 +117,7 @@ In the settings menu, there is an option **Auto Swap FDS Disks**. This is disabl
 
 ## Playing NSF audio files
 
-The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension. This works on both the RP2040 and RP2350 boards.
+The emulator can play Nintendo Sound Format files. These are roms with the `.nsf` extension.
 
 Each NSF file can have multiple tracks. Loading a `.nsf` rom from the menu will automatically start the first track.  Each track is played for the maximum duration of 3 minutes. Then the next track is played. When there is silence for more than 4 seconds, the next track is played.
 
